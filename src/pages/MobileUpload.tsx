@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Camera, Loader2, CircleCheck, CircleAlert, Plus } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
+import { compressImage } from "@/lib/compressImage";
 import { Logo } from "@/components/Logo";
 import { Mascot } from "@/components/Mascot";
 
@@ -34,8 +35,9 @@ export default function MobileUpload() {
     setState("uploading");
     setError(null);
     try {
-      await api.uploadSessionPhoto(sessionId, file);
-      setPhotos((prev) => [...prev, { url: URL.createObjectURL(file) }]);
+      const compressed = await compressImage(file);
+      await api.uploadSessionPhoto(sessionId, compressed);
+      setPhotos((prev) => [...prev, { url: URL.createObjectURL(compressed) }]);
       setState("ready");
     } catch (err) {
       setState("error");
