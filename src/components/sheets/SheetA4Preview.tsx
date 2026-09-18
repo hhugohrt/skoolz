@@ -34,9 +34,11 @@ export function SheetA4Preview({ sheet, orientation, onOrientationChange }: Shee
     return () => observer.disconnect();
   }, []);
 
-  function handleLoad() {
+  async function handleLoad() {
     const doc = frameRef.current?.contentDocument;
     if (!doc) return;
+    // Les polices manuscrites changent les dimensions du texte : on mesure après leur chargement.
+    await doc.fonts?.ready.catch(() => {});
     fitSheetToPage(doc, orientation);
     setContentHeight(doc.documentElement.scrollHeight);
   }
