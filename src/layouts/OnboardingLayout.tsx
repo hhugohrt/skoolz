@@ -2,12 +2,14 @@ import { Outlet, useLocation } from "react-router-dom";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { Logo } from "@/components/Logo";
 import { usePageMeta } from "@/lib/usePageMeta";
+import { shouldShowInstallTutorial } from "@/lib/device";
 
-const STEPS = ["level", "subjects", "theme", "complete"];
 
 export function OnboardingLayout() {
   usePageMeta({ title: "Bienvenue — Skoolz", path: "/onboarding" });
   const location = useLocation();
+  // L'étape « écran d'accueil » n'existe que sur téléphone.
+  const STEPS = shouldShowInstallTutorial() ? ["level", "subjects", "install", "complete"] : ["level", "subjects", "complete"];
   const currentStep = STEPS.findIndex((step) => location.pathname.endsWith(step));
 
   return (

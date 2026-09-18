@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import type { Level, Theme } from "@/lib/api";
+import type { Level } from "@/lib/api";
 
 interface OnboardingContextValue {
   level: Level | null;
@@ -7,8 +7,6 @@ interface OnboardingContextValue {
   subjectIds: string[];
   setSubjectIds: (ids: string[]) => void;
   toggleSubject: (id: string) => void;
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
 }
 
 const OnboardingContext = createContext<OnboardingContextValue | null>(null);
@@ -16,7 +14,6 @@ const OnboardingContext = createContext<OnboardingContextValue | null>(null);
 export function OnboardingProvider({ children }: { children: ReactNode }) {
   const [level, setLevel] = useState<Level | null>(null);
   const [subjectIds, setSubjectIds] = useState<string[]>([]);
-  const [theme, setTheme] = useState<Theme>("auto");
 
   function toggleSubject(id: string) {
     setSubjectIds((prev) => (prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]));
@@ -24,7 +21,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
 
   return (
     <OnboardingContext.Provider
-      value={{ level, setLevel, subjectIds, setSubjectIds, toggleSubject, theme, setTheme }}
+      value={{ level, setLevel, subjectIds, setSubjectIds, toggleSubject }}
     >
       {children}
     </OnboardingContext.Provider>

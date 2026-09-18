@@ -16,7 +16,7 @@ import VerifyEmail from "@/pages/VerifyEmail";
 import Dashboard from "@/pages/Dashboard";
 import OnboardingLevel from "@/pages/onboarding/Level";
 import OnboardingSubjects from "@/pages/onboarding/Subjects";
-import OnboardingTheme from "@/pages/onboarding/Theme";
+import OnboardingInstall from "@/pages/onboarding/Install";
 import OnboardingComplete from "@/pages/onboarding/Complete";
 import Courses from "@/pages/app/Courses";
 import SheetDetail from "@/pages/app/SheetDetail";
@@ -55,7 +55,7 @@ export default function App() {
           <Route index element={<Navigate to="level" replace />} />
           <Route path="level" element={<OnboardingLevel />} />
           <Route path="subjects" element={<OnboardingSubjects />} />
-          <Route path="theme" element={<OnboardingTheme />} />
+          <Route path="install" element={<OnboardingInstall />} />
           <Route path="complete" element={<OnboardingComplete />} />
         </Route>
 

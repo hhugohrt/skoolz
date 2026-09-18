@@ -14,16 +14,10 @@ const LEVEL_LABELS: Record<string, string> = {
   superieur: "Études supérieures",
 };
 
-const THEME_LABELS: Record<string, string> = {
-  light: "Clair",
-  dark: "Sombre",
-  auto: "Automatique",
-};
-
 export default function OnboardingComplete() {
   const navigate = useNavigate();
   const { token, setUser } = useAuth();
-  const { level, subjectIds, theme } = useOnboarding();
+  const { level, subjectIds } = useOnboarding();
   const [subjects, setSubjects] = useState<ApiSubject[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +36,7 @@ export default function OnboardingComplete() {
     setSubmitting(true);
     setError(null);
     try {
-      const { user } = await api.submitOnboarding(token!, { level, subjectIds, theme });
+      const { user } = await api.submitOnboarding(token!, { level, subjectIds, theme: "auto" });
       setUser(user);
       navigate("/app");
     } catch {
@@ -68,10 +62,6 @@ export default function OnboardingComplete() {
           <span className="max-w-[280px] text-right font-semibold text-text">
             {selectedNames.length > 0 ? selectedNames.join(", ") : "—"}
           </span>
-        </div>
-        <div className="flex justify-between text-[15px]">
-          <span className="text-text-secondary">Apparence</span>
-          <span className="font-semibold text-text">{THEME_LABELS[theme]}</span>
         </div>
       </div>
 

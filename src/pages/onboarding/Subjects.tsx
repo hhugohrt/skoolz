@@ -5,6 +5,7 @@ import { PrimaryButton } from "@/components/auth/PrimaryButton";
 import { useOnboarding } from "@/context/OnboardingContext";
 import { useAuth } from "@/context/AuthContext";
 import { api, type ApiSubject } from "@/lib/api";
+import { shouldShowInstallTutorial } from "@/lib/device";
 
 export default function OnboardingSubjects() {
   const navigate = useNavigate();
@@ -93,7 +94,7 @@ export default function OnboardingSubjects() {
         gradient={false}
         className="mt-8"
         disabled={subjectIds.length === 0}
-        onClick={() => navigate("/onboarding/theme")}
+        onClick={() => navigate(shouldShowInstallTutorial() ? "/onboarding/install" : "/onboarding/complete")}
       />
     </div>
   );

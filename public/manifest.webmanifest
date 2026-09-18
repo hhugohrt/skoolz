@@ -1,0 +1,15 @@
+{
+  "name": "Skoolz",
+  "short_name": "Skoolz",
+  "description": "Tes fiches de révision générées par IA, colorées et imprimables.",
+  "lang": "fr",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8f8fa",
+  "theme_color": "#f8f8fa",
+  "icons": [
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" },
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
