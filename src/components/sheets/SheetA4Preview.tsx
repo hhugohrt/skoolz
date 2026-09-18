@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Printer, RectangleHorizontal, RectangleVertical } from "lucide-react";
 import type { ApiSheetDetail } from "@/lib/api";
-import { A4_PX, buildSheetHtml, fitSheetToPage, type Orientation } from "@/lib/sheetHtml";
+import { A4_PX, buildSheetHtml, finalizeSheetDocument } from "@/lib/sheetHtml";
+import type { Orientation, SheetStyle } from "@/lib/sheetStyles";
 
 interface SheetA4PreviewProps {
   sheet: ApiSheetDetail;
+  style: SheetStyle;
   orientation: Orientation;
   onOrientationChange: (orientation: Orientation) => void;
 }
@@ -14,13 +16,13 @@ const ORIENTATIONS: { value: Orientation; label: string; icon: typeof RectangleV
   { value: "landscape", label: "Paysage", icon: RectangleHorizontal },
 ];
 
-export function SheetA4Preview({ sheet, orientation, onOrientationChange }: SheetA4PreviewProps) {
+export function SheetA4Preview({ sheet, style, orientation, onOrientationChange }: SheetA4PreviewProps) {
   const frameRef = useRef<HTMLIFrameElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperWidth, setWrapperWidth] = useState(0);
   const [contentHeight, setContentHeight] = useState<number>(A4_PX[orientation].h);
 
-  const html = useMemo(() => buildSheetHtml(sheet, orientation), [sheet, orientation]);
+  const html = useMemo(() => buildSheetHtml(sheet, orientation, style), [sheet, orientation, style]);
   const page = A4_PX[orientation];
   const scale = wrapperWidth > 0 ? Math.min(1, wrapperWidth / page.w) : 1;
   const frameHeight = Math.max(page.h, contentHeight);
@@ -39,7 +41,7 @@ export function SheetA4Preview({ sheet, orientation, onOrientationChange }: Shee
     if (!doc) return;
     // Les polices manuscrites changent les dimensions du texte : on mesure après leur chargement.
     await doc.fonts?.ready.catch(() => {});
-    fitSheetToPage(doc, orientation);
+    finalizeSheetDocument(doc, style, orientation);
     setContentHeight(doc.documentElement.scrollHeight);
   }
 
@@ -106,6 +108,8 @@ export function SheetA4Preview({ sheet, orientation, onOrientationChange }: Shee
       <p className="mt-2 text-center text-[12px] text-text-secondary">
         Format A4 {orientation === "portrait" ? "portrait" : "paysage"} — dans la fenêtre d&rsquo;impression, choisis
         « Enregistrer au format PDF » pour la télécharger, et laisse les marges sur « Par défaut ».
+        {style === "mindmap" &&
+          " La carte mentale est un résumé visuel : les points les plus longs sont abrégés, tout figure dans la fiche texte."}
       </p>
     </div>
   );

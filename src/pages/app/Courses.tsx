@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FileText, Loader2, TriangleAlert, Clock } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { api, type ApiCourse, type SheetLayout } from "@/lib/api";
+import { api, type ApiCourse } from "@/lib/api";
+import { DEFAULT_LAYOUT, type SheetLayout } from "@/lib/sheetStyles";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CourseDropzone } from "@/components/courses/CourseDropzone";
 import { QrCourseImportButton } from "@/components/courses/QrCourseImport";
@@ -20,7 +21,7 @@ export default function Courses() {
   const [courses, setCourses] = useState<ApiCourse[] | null>(null);
   const [sheetByCourse, setSheetByCourse] = useState<Record<string, string>>({});
   const [retryingId, setRetryingId] = useState<string | null>(null);
-  const [layout, setLayout] = useState<SheetLayout>("text");
+  const [layout, setLayout] = useState<SheetLayout>(DEFAULT_LAYOUT);
 
   function refresh() {
     api.listCourses(token!).then(({ courses }) => setCourses(courses));

@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { CourseDropzone } from "@/components/courses/CourseDropzone";
 import { QrCourseImportButton } from "@/components/courses/QrCourseImport";
 import { FormatToggle } from "@/components/courses/FormatToggle";
-import type { SheetLayout } from "@/lib/api";
+import { DEFAULT_LAYOUT, type SheetLayout } from "@/lib/sheetStyles";
 
 const STEPS = [
   {
@@ -31,7 +31,7 @@ const STEPS = [
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [layout, setLayout] = useState<SheetLayout>("text");
+  const [layout, setLayout] = useState<SheetLayout>(DEFAULT_LAYOUT);
 
   return (
     <div>

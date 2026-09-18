@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
 import { Smartphone, Loader2, CircleAlert, RotateCcw } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { api, ApiError, type ApiSessionPhoto, type SheetLayout } from "@/lib/api";
+import { api, ApiError, type ApiSessionPhoto } from "@/lib/api";
+import type { SheetLayout } from "@/lib/sheetStyles";
 import { Modal } from "@/components/ui/Modal";
 
 type State = "loading" | "waiting" | "review" | "importing" | "expired" | "error";
@@ -172,9 +173,9 @@ function QrCourseImportModal({
     setState("importing");
     try {
       const { course } = await api.importUploadSession(token!, sessionId);
-      const { sheetId } = await api.generateSheet(token!, course.id);
+      const { sheetId, suggestedSubject } = await api.generateSheet(token!, course.id);
       onImported?.();
-      navigate(`/app/sheets/${sheetId}`, { state: { layout } });
+      navigate(`/app/sheets/${sheetId}`, { state: { layout, suggestedSubject, justGenerated: true } });
     } catch (err) {
       setState("error");
       setError(err instanceof ApiError ? err.message : "Impossible de générer la fiche.");

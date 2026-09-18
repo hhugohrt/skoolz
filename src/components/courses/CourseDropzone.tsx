@@ -2,7 +2,8 @@ import { useRef, useState, type DragEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { UploadCloud, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { api, ApiError, type SheetLayout } from "@/lib/api";
+import { api, ApiError } from "@/lib/api";
+import type { SheetLayout } from "@/lib/sheetStyles";
 
 type Phase = "idle" | "uploading" | "generating" | "error";
 
@@ -27,9 +28,9 @@ export function CourseDropzone({ layout, onUploaded }: CourseDropzoneProps) {
     try {
       const { course } = await api.uploadCourse(token!, file);
       setPhase("generating");
-      const { sheetId } = await api.generateSheet(token!, course.id);
+      const { sheetId, suggestedSubject } = await api.generateSheet(token!, course.id);
       onUploaded?.();
-      navigate(`/app/sheets/${sheetId}`, { state: { layout } });
+      navigate(`/app/sheets/${sheetId}`, { state: { layout, suggestedSubject, justGenerated: true } });
     } catch (err) {
       setPhase("error");
       setError(err instanceof ApiError ? err.message : "Impossible d'importer ce cours pour le moment.");

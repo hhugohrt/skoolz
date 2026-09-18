@@ -1,43 +1,33 @@
 import type { ApiSheetDetail, ApiSheetSection } from "@/lib/api";
+import type { Orientation, SheetStyle } from "@/lib/sheetStyles";
 
-export type Orientation = "portrait" | "landscape";
+export type { Orientation } from "@/lib/sheetStyles";
 
 // Dimensions A4 en px CSS (96 dpi) : sert à l'aperçu à l'écran.
 export const A4_PX = { portrait: { w: 794, h: 1123 }, landscape: { w: 1123, h: 794 } } as const;
 
-interface Theme {
-  label: string;
-  icon: string;
-  bg: string; // fond de la carte
-  ac: string; // couleur d'accent (bordure, titre, puces)
-  hl: string; // surlignage du titre
-  sh: string; // ombre décalée
-  tape: string; // adhésif décoratif
+// Hauteur utile d'une page A4 une fois les marges @page (8 mm haut et bas) retirées.
+const USABLE_H = { portrait: A4_PX.portrait.h - 61, landscape: A4_PX.landscape.h - 61 } as const;
+
+interface Hue {
+  ac: string; // titres, bordures, puces
+  bg: string; // fond du bloc
+  bd: string; // bordure du bloc
+  tint: string; // fond des encadrés internes (formules, exemples)
 }
 
-const THEMES: Record<string, Theme> = {
-  definition: { label: "Définition", icon: "📖", bg: "#e8f1ff", ac: "#2b62d9", hl: "rgba(43,98,217,.20)", sh: "#b9cff7", tape: "#9ec0ff" },
-  formula: { label: "Formule", icon: "🧮", bg: "#f0eaff", ac: "#6a45e8", hl: "rgba(106,69,232,.20)", sh: "#cfc0f7", tape: "#c6b3ff" },
-  notion: { label: "Notion", icon: "💡", bg: "#e7f7ec", ac: "#1d8a4a", hl: "rgba(29,138,74,.20)", sh: "#b5e0c2", tape: "#9fdcb3" },
-  example: { label: "Exemple", icon: "✏️", bg: "#fff1e0", ac: "#d2650f", hl: "rgba(210,101,15,.20)", sh: "#f6cf9d", tape: "#ffcf8f" },
-  key_point: { label: "À savoir par cœur", icon: "❤️", bg: "#fff5c9", ac: "#e0294d", hl: "rgba(224,41,77,.16)", sh: "#f3dd8a", tape: "#ffb3c1" },
-  common_mistake: { label: "Attention piège", icon: "⚠️", bg: "#ffecea", ac: "#d92d20", hl: "rgba(217,45,32,.18)", sh: "#f4b8b2", tape: "#ffb4ac" },
-  date: { label: "Date", icon: "📅", bg: "#e2f6f6", ac: "#0e8a82", hl: "rgba(14,138,130,.20)", sh: "#a6dcd8", tape: "#8fdad4" },
-  concept: { label: "Concept", icon: "🧠", bg: "#eaecff", ac: "#4b47dd", hl: "rgba(75,71,221,.20)", sh: "#c1c5f8", tape: "#b3b8ff" },
-  method: { label: "Méthode", icon: "🛠️", bg: "#fff6d6", ac: "#a86a00", hl: "rgba(168,106,0,.20)", sh: "#efdb96", tape: "#ffe08a" },
-};
+// Une couleur par bloc, en rotation, comme sur une fiche faite à la main.
+const HUES: Hue[] = [
+  { ac: "#c0272d", bg: "#fdecec", bd: "#f2b3b3", tint: "rgba(192,39,45,.10)" },
+  { ac: "#1f5fb5", bg: "#e7f1fd", bd: "#b3d1f2", tint: "rgba(31,95,181,.10)" },
+  { ac: "#2b8a3e", bg: "#e8f6e9", bd: "#b6dfba", tint: "rgba(43,138,62,.11)" },
+  { ac: "#c76d06", bg: "#fff2dd", bd: "#f4cf8c", tint: "rgba(199,109,6,.11)" },
+  { ac: "#6a3fb5", bg: "#f0eafb", bd: "#cfbcee", tint: "rgba(106,63,181,.10)" },
+  { ac: "#12807a", bg: "#e2f6f4", bd: "#a6dcd7", tint: "rgba(18,128,122,.11)" },
+];
+const KEY_HUE: Hue = { ac: "#a35a00", bg: "#fff6c8", bd: "#f0d55c", tint: "rgba(163,90,0,.10)" };
 
-const FALLBACK_THEME = THEMES.notion;
-
-// La plupart des sections sont de type "notion" : on fait alterner les couleurs pour une fiche vivante,
-// tout en gardant une couleur fixe pour les types qui ont un sens visuel (formule, piège, exemple...).
-const NOTION_ROTATION = [THEMES.notion, THEMES.definition, THEMES.example, THEMES.concept, THEMES.date, THEMES.method];
-
-function pickTheme(type: string, notionIndex: number): Theme {
-  const base = THEMES[type] ?? FALLBACK_THEME;
-  if (type !== "notion") return base;
-  return { ...NOTION_ROTATION[notionIndex % NOTION_ROTATION.length], label: base.label, icon: base.icon };
-}
+const hueStyle = (h: Hue) => `--ac:${h.ac};--bg:${h.bg};--bd:${h.bd};--tint:${h.tint}`;
 
 // Tout texte issu de l'IA est échappé : la fiche est injectée dans un document HTML.
 function esc(value: string): string {
@@ -53,6 +43,27 @@ function pretty(value: string): string {
   return esc(value.replace(/\s->\s/g, " → ").replace(/\s=>\s/g, " ⇒ "));
 }
 
+// Mise en forme mathématique légère : x^2 → x², u_n → uₙ, a*b → a × b.
+function math(value: string): string {
+  const withTimes = value.replace(/(?<=[\w)])\s?\*\s?(?=[\w(])/g, " × ");
+  return pretty(withTimes)
+    .replace(/\^(\{[^}]+\}|\([^)]*\)|[A-Za-z0-9+\-−]+)/g, (_m, p: string) => `<sup>${p.replace(/^[{(]|[})]$/g, "")}</sup>`)
+    .replace(/_(\{[^}]+\}|[A-Za-z0-9]+(?:[+\-−][A-Za-z0-9]+)?)/g, (_m, p: string) => `<sub>${p.replace(/^\{|\}$/g, "")}</sub>`);
+}
+
+// Indices et exposants dans le texte courant (u_n+1 → uₙ₊₁, x^2 → x²), sans toucher aux mots.
+function soft(value: string): string {
+  return pretty(value.replace(/(?<=[\w)])\s?\*\s?(?=[\w(])/g, " × "))
+    .replace(/\b([A-Za-z])_(\{[^}]+\}|[A-Za-z0-9]+(?:[+\-−][A-Za-z0-9]+)?)/g, (_m, l: string, p: string) => `${l}<sub>${p.replace(/^\{|\}$/g, "")}</sub>`)
+    .replace(/(?<=[\w)])\^(\{[^}]+\}|\([^)]*\)|[A-Za-z0-9]+)/g, (_m, p: string) => `<sup>${p.replace(/^[{(]|[})]$/g, "")}</sup>`);
+}
+
+// Une ligne « formule » : une égalité courte, sans phrase.
+function isFormulaLike(value: string): boolean {
+  if (/\b(si|de|du|des|le|la|les|et|ou|un|une|par|pour|donc|dont|avec|sans|en|est|sont)\b/i.test(value)) return false;
+  return /[=≈≠]/.test(value) && value.length <= 80 && (value.match(/\p{L}{5,}/gu) ?? []).length <= 2;
+}
+
 // Le modèle écrit parfois une énumération sur une seule ligne ("1. ... 2. ... 3. ...") : on la
 // transforme en vraie liste plutôt qu'en paragraphe compact.
 function splitInlineNumbering(line: string): string[] {
@@ -61,31 +72,56 @@ function splitInlineNumbering(line: string): string[] {
   return parts.length >= 3 ? parts.map((part) => `- ${part.replace(/^\d{1,2}[.)]\s+/, "")}`) : [line];
 }
 
-function renderContent(section: ApiSheetSection): string {
-  const lines = section.content.split("\n").flatMap((l) => splitInlineNumbering(l.trim()));
-  const isFormula = section.type === "formula";
+// « Libellé : valeur » → libellé en gras ; une valeur qui est une formule passe dans un encadré.
+function inline(text: string): string {
+  const m = text.match(/^(.{2,42}?)\s:\s(.+)$/);
+  if (m && isFormulaLike(m[2])) return `<b>${soft(m[1])} :</b><span class="formula">${math(m[2])}</span>`;
+  if (m) return `<b>${soft(m[1])} :</b> ${soft(m[2])}`;
+  if (isFormulaLike(text)) return `<span class="formula">${math(text)}</span>`;
+  return soft(text);
+}
+
+function cleanLines(section: ApiSheetSection): string[] {
+  return section.content
+    .split("\n")
+    .flatMap((l) => splitInlineNumbering(l.trim()))
+    .filter((l) => l !== "");
+}
+
+function renderBody(section: ApiSheetSection): string {
+  const lines = cleanLines(section);
+  const isFormulaSection = section.type === "formula";
   const out: string[] = [];
-  let list: string[] = [];
+  let bullets: string[] = [];
+  let steps: string[] = [];
 
   const flush = () => {
-    if (list.length > 0) {
-      out.push(`<ul>${list.map((item) => `<li>${pretty(item)}</li>`).join("")}</ul>`);
-      list = [];
+    if (bullets.length > 0) out.push(`<ul>${bullets.map((b) => `<li>${b}</li>`).join("")}</ul>`);
+    if (steps.length > 0) {
+      // Une seule ligne numérotée n'est pas une suite d'étapes : on la garde comme paragraphe.
+      out.push(
+        steps.length >= 2
+          ? `<ol class="steps">${steps.map((s) => `<li>${s}</li>`).join("")}</ol>`
+          : `<p>${steps[0]}</p>`,
+      );
     }
+    bullets = [];
+    steps = [];
   };
 
   for (const line of lines) {
-    if (line === "") {
-      flush();
-      continue;
-    }
     const bullet = line.match(/^[-•*]\s+(.*)$/);
+    const numbered = line.match(/^\d{1,2}[.)]\s+(.*)$/);
     if (bullet) {
-      list.push(bullet[1]);
-      continue;
+      if (steps.length > 0) flush();
+      bullets.push(inline(bullet[1]));
+    } else if (numbered) {
+      if (bullets.length > 0) flush();
+      steps.push(inline(numbered[1]));
+    } else {
+      flush();
+      out.push(isFormulaSection && isFormulaLike(line) ? `<div class="formula block">${math(line)}</div>` : `<p>${inline(line)}</p>`);
     }
-    flush();
-    out.push(isFormula ? `<div class="formula">${pretty(line)}</div>` : `<p>${pretty(line)}</p>`);
   }
   flush();
   return out.join("");
@@ -103,139 +139,335 @@ function baseFontPt(totalChars: number): number {
   return 7.4;
 }
 
+function totalChars(sheet: ApiSheetDetail): number {
+  return sheet.sections.reduce((n, s) => n + s.content.length + (s.title?.length ?? 0), 0);
+}
+
+// Sections dans l'ordre d'affichage : « À retenir » toujours en dernier.
+function orderedSections(sheet: ApiSheetDetail): ApiSheetSection[] {
+  return [...sheet.sections.filter((s) => s.type !== "key_point"), ...sheet.sections.filter((s) => s.type === "key_point")];
+}
+
 const FONTS_URL =
-  "https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Kalam:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap";
+  "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Caveat:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap";
 
-const WAVE_UNDERLINE =
-  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='22' height='8'><path d='M0 4 Q5.5 0 11 4 T22 4' fill='none' stroke='%23ffb703' stroke-width='2.4' stroke-linecap='round'/></svg>";
+const BASE_CSS = `
+  @page { size: A4 var(--orient); margin: 8mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; padding: 8mm; background: #fff; color: #23232c;
+    font-family: "Nunito","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif; line-height: 1.36; }
+  @media print { body { padding: 0; } }
+  sup, sub { line-height: 0; font-size: .72em; }
+  .formula { display: inline-block; margin: .5mm 0; padding: .8mm 2.6mm; background: var(--tint); border-radius: 1.6mm;
+    font-family: "Cambria Math","STIX Two Math","Times New Roman",serif; font-style: italic; font-size: 1.06em; overflow-wrap: anywhere; }
+  .formula.block { display: block; text-align: center; padding: 1.4mm 2.6mm; margin: 1mm 0; }
+  li > .formula { display: block; width: fit-content; max-width: 100%; margin-top: .6mm; }
+  .steps { list-style: none; counter-reset: step; margin: 0 0 1.4mm; padding: 0; }
+  .body .steps li { counter-increment: step; position: relative; padding-left: 6mm; margin-bottom: 1mm; break-inside: avoid; }
+  .body .steps li::before { content: counter(step); left: 0; width: 4.2mm; height: 4.2mm; border-radius: 50%; position: absolute; top: .08em;
+    background: var(--ac); color: #fff; font-size: .78em; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+  footer { display: flex; align-items: center; justify-content: space-between; margin-top: 2mm; padding-top: 1.4mm;
+    border-top: 0.3mm dashed #c9c9d2; font-size: .7em; color: #8a8a96; }
+  footer .brand { font-family: "Caveat",cursive; font-size: 1.9em; font-weight: 700; line-height: 1; color: #6d4aff; }
+`;
 
-export function buildSheetHtml(sheet: ApiSheetDetail, orientation: Orientation): string {
-  const totalChars = sheet.sections.reduce((n, s) => n + s.content.length + (s.title?.length ?? 0), 0);
-  const fontPt = baseFontPt(totalChars);
-  const columns = orientation === "landscape" ? 3 : 2;
+const BLOCK_CSS = `
+  header { position: relative; display: flex; align-items: center; gap: 6mm; padding: 3.2mm 6mm 3.6mm; margin-bottom: 4mm;
+    background: #e3f0fb; border: 0.55mm solid #16386b; border-radius: 3.2mm; }
+  header .titles { flex: 1; min-width: 0; text-align: center; }
+  header h1 { margin: 0; font-family: "Caveat","Segoe Print",cursive; font-size: 3em; font-weight: 700; line-height: 1.02; color: #16386b; }
+  header .meta { display: inline-block; margin-top: .6mm; padding: 0 5mm 1mm; font-family: "Caveat","Segoe Print",cursive;
+    font-size: 1.5em; font-weight: 700; color: #16386b; background: linear-gradient(transparent 55%, #fff27a 55%); }
+  header .note { flex: 0 0 26%; padding: 2.6mm 3.4mm; transform: rotate(2.2deg); background: #fff4a8; border-radius: .8mm;
+    box-shadow: .8mm 1.2mm 2mm rgba(0,0,0,.16); font-family: "Caveat","Segoe Print",cursive; font-size: 1.22em; line-height: 1.12; color: #4a3f10; }
 
-  const ordered = [...sheet.sections.filter((s) => s.type !== "key_point"), ...sheet.sections.filter((s) => s.type === "key_point")];
-  let counter = 0;
-  let notionCount = 0;
+  .cards { column-count: var(--cols); column-gap: 3.4mm; }
+  .card { break-inside: avoid; page-break-inside: avoid; margin: 0 0 3.4mm; padding: 2.6mm 3.4mm 3mm;
+    background: var(--bg); border: 0.4mm solid var(--bd); border-radius: 3mm; }
+  .card h2 { display: flex; align-items: baseline; gap: 1.6mm; margin: 0 0 1.6mm; font-family: "Barlow Condensed","Arial Narrow",sans-serif;
+    font-size: 1.32em; font-weight: 700; line-height: 1.1; letter-spacing: .01em; text-transform: uppercase; color: var(--ac); }
+  .card h2 .n { font-size: 1.25em; }
+  .body p { margin: 0 0 1.2mm; }
+  .body p:last-child, .body ul:last-child, .body ol:last-child { margin-bottom: 0; }
+  .body ul { margin: 0 0 1.2mm; padding: 0; list-style: none; }
+  .body li { position: relative; padding-left: 4mm; margin-bottom: .9mm; }
+  .body li::before { content: ""; position: absolute; left: .2mm; top: .55em; width: 1.9mm; height: 1.9mm; border-radius: 50%; background: var(--ac); }
+  .body b { font-weight: 800; }
+  .body.t-example { background: rgba(72,92,130,.10); border-radius: 2mm; padding: 1.8mm 2.4mm; }
+  .body.t-common_mistake { color: #b3201b; font-weight: 700; }
+  .body.t-common_mistake li::before { background: #b3201b; }
+  .card.key { border-width: .5mm; }
+  .card.key h2::after { content: "♥"; color: #e0294d; font-size: 1.1em; margin-left: 1mm; }
+`;
 
-  const cards = ordered
-    .map((section) => {
-      const theme = pickTheme(section.type, notionCount);
-      if (section.type === "notion") notionCount += 1;
-      const isKey = section.type === "key_point";
-      if (!isKey) counter += 1;
-      const heading = section.title ?? theme.label;
-      return `<section class="card${isKey ? " key" : ""}" style="--bg:${theme.bg};--ac:${theme.ac};--hl:${theme.hl};--sh:${theme.sh};--tape:${theme.tape}">
-  <div class="tag"><span class="ico">${theme.icon}</span>${esc(theme.label)}</div>
-  <h2>${isKey ? "" : `<span class="num">${counter}</span>`}<span class="ttl">${esc(heading)}</span></h2>
-  <div class="body">${renderContent(section)}</div>
-</section>`;
-    })
-    .join("\n");
+const COMPACT_CSS = `
+  header { display: flex; align-items: baseline; justify-content: space-between; gap: 4mm; padding: 1.6mm 4mm; margin-bottom: 2.6mm;
+    background: #e3f0fb; border: 0.4mm solid #16386b; border-radius: 2mm; }
+  header h1 { margin: 0; font-family: "Caveat","Segoe Print",cursive; font-size: 2.1em; font-weight: 700; line-height: 1; color: #16386b; }
+  header .meta { font-family: "Caveat","Segoe Print",cursive; font-size: 1.25em; font-weight: 700; color: #16386b; white-space: nowrap; }
+  header .note { display: none; }
+  .cards { column-count: var(--cols); column-gap: 2.6mm; }
+  .card { break-inside: avoid; page-break-inside: avoid; margin: 0 0 2.4mm; padding: 1.8mm 2.4mm 2mm;
+    background: var(--bg); border: 0.25mm solid var(--bd); border-left: 1.3mm solid var(--ac); border-radius: 1.6mm; }
+  .card h2 { margin: 0 0 .8mm; font-family: "Barlow Condensed","Arial Narrow",sans-serif; font-size: 1.12em; font-weight: 700;
+    line-height: 1.1; text-transform: uppercase; color: var(--ac); }
+  .card h2 .n { font-size: 1em; margin-right: 1mm; }
+  .body p { margin: 0 0 .7mm; }
+  .body p:last-child, .body ul:last-child, .body ol:last-child { margin-bottom: 0; }
+  .body ul { margin: 0 0 .7mm; padding: 0; list-style: none; }
+  .body li { position: relative; padding-left: 2.8mm; margin-bottom: .4mm; }
+  .body li::before { content: ""; position: absolute; left: .1mm; top: .55em; width: 1.3mm; height: 1.3mm; border-radius: 50%; background: var(--ac); }
+  .body b { font-weight: 800; }
+  .body.t-common_mistake { color: #b3201b; font-weight: 700; }
+  .card.key h2::after { content: "♥"; color: #e0294d; margin-left: 1mm; }
+  .formula { padding: .3mm 1.6mm; }
+  .formula.block { padding: .8mm 1.6mm; margin: .5mm 0; }
+`;
 
-  const meta = [sheet.subjectName, sheet.chapter].filter(Boolean).join(" · ");
+const DIAGRAM_CSS = `
+  header { display: flex; align-items: center; justify-content: center; gap: 5mm; padding: 2.4mm 6mm; margin-bottom: 5mm;
+    background: #e3f0fb; border: 0.5mm solid #16386b; border-radius: 3mm; text-align: center; }
+  header .titles { flex: 1; }
+  header h1 { margin: 0; font-family: "Caveat","Segoe Print",cursive; font-size: 2.6em; font-weight: 700; line-height: 1; color: #16386b; }
+  header .meta { font-family: "Caveat","Segoe Print",cursive; font-size: 1.35em; font-weight: 700; color: #16386b; }
+  header .note { display: none; }
+  .flow { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); column-gap: 10mm; row-gap: 10mm; align-items: start; }
+  .box { position: relative; break-inside: avoid; border: 0.4mm solid var(--bd); border-radius: 3mm; background: var(--bg); }
+  .box h2 { display: flex; align-items: center; gap: 1.8mm; margin: 0; padding: 1.8mm 3mm; background: var(--ac); color: #fff;
+    border-radius: 2.6mm 2.6mm 0 0; font-family: "Barlow Condensed","Arial Narrow",sans-serif; font-size: 1.22em; font-weight: 700;
+    line-height: 1.1; text-transform: uppercase; }
+  .box h2 .n { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 1.5em; height: 1.5em; border-radius: 50%;
+    background: #fff; color: var(--ac); font-size: .85em; }
+  .box .body { padding: 2mm 3mm 2.4mm; }
+  .body p { margin: 0 0 1mm; }
+  .body p:last-child, .body ul:last-child, .body ol:last-child { margin-bottom: 0; }
+  .body ul { margin: 0 0 1mm; padding: 0; list-style: none; }
+  .body li { position: relative; padding-left: 3.6mm; margin-bottom: .7mm; }
+  .body li::before { content: ""; position: absolute; left: .2mm; top: .55em; width: 1.7mm; height: 1.7mm; border-radius: 50%; background: var(--ac); }
+  .body b { font-weight: 800; }
+  .body.t-common_mistake { color: #b3201b; font-weight: 700; }
+  .arw { position: absolute; z-index: 2; width: 7.4mm; height: 7.4mm; border-radius: 50%; background: #fff; color: var(--ac);
+    border: 0.6mm solid var(--ac); display: flex; align-items: center; justify-content: center; font-size: 1.15em; font-weight: 800; line-height: 1; }
+  .arw.r { right: -8.7mm; top: calc(50% - 3.7mm); }
+  .arw.l { left: -8.7mm; top: calc(50% - 3.7mm); }
+  .arw.d { bottom: -8.7mm; left: calc(50% - 3.7mm); }
+  .box.key h2::after { content: "♥"; margin-left: auto; }
+`;
+
+const MINDMAP_CSS = `
+  .map { position: relative; display: flex; align-items: stretch; gap: 6mm; }
+  .col { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-around; gap: 2mm; }
+  .item { position: relative; z-index: 1; display: flex; align-items: center; gap: 3mm; }
+  .node { flex: none; width: var(--node-w); padding: 1.8mm 2.4mm; border-radius: 3mm; background: var(--ac); color: #fff; text-align: center;
+    font-family: "Barlow Condensed","Arial Narrow",sans-serif; font-size: 1.28em; font-weight: 700; line-height: 1.08; text-transform: uppercase; }
+  .leaves { flex: 1; min-width: 0; margin: 0; padding: 0; list-style: none; font-size: .86em; line-height: 1.26; }
+  .leaves li { position: relative; margin-bottom: .6mm; }
+  .col.left .leaves { text-align: right; }
+  .col.left .leaves li { padding-right: 3.6mm; }
+  .col.right .leaves li { padding-left: 3.6mm; }
+  .leaves li::before { content: ""; position: absolute; top: .5em; width: 1.6mm; height: 1.6mm; border-radius: 50%; background: var(--ac); }
+  .col.left .leaves li::before { right: 0; }
+  .col.right .leaves li::before { left: 0; }
+  .leaves li.more { opacity: .6; font-style: italic; }
+  .center { flex: none; width: var(--core-w); display: flex; align-items: center; justify-content: center; }
+  .core { position: relative; z-index: 2; padding: 5mm 4mm; border-radius: 46% 54% 50% 50% / 52% 48% 52% 48%; text-align: center;
+    background: linear-gradient(135deg, #4f8cff, #6d4aff 55%, #a855f7); color: #fff; box-shadow: 0 1.4mm 3mm rgba(109,74,255,.35); }
+  .core h1 { margin: 0; font-family: "Caveat","Segoe Print",cursive; font-size: 2.3em; font-weight: 700; line-height: 1; }
+  .core .meta { margin-top: 1.4mm; font-family: "Caveat","Segoe Print",cursive; font-size: 1.25em; font-weight: 700; opacity: .92; }
+  svg.links { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: visible; }
+`;
+
+function banner(sheet: ApiSheetDetail): string {
+  const meta = [sheet.subjectName, sheet.chapter].filter(Boolean).join(" – ");
+  return `<header>
+  <div class="titles"><h1>${esc(sheet.title)}</h1>${meta ? `<div class="meta">${esc(meta)}</div>` : ""}</div>
+  ${sheet.summary ? `<div class="note">${esc(sheet.summary)}</div>` : ""}
+</header>`;
+}
+
+function footer(sheet: ApiSheetDetail): string {
   const date = new Date(sheet.createdAt).toLocaleDateString("fr-FR");
+  return `<footer><span><span class="brand">skoolz</span> · fiche de révision</span><span>${esc(date)}</span></footer>`;
+}
 
+function documentShell(
+  sheet: ApiSheetDetail,
+  orientation: Orientation,
+  style: SheetStyle,
+  css: string,
+  vars: string,
+  body: string,
+  bodyStyle = "",
+): string {
   return `<!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><title>${esc(sheet.title)}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="${FONTS_URL}">
 <style>
-  @page { size: A4 ${orientation}; margin: 8mm; }
-  * { box-sizing: border-box; }
-  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  body { margin: 0; padding: 8mm; color: #262633;
-    background-color: #fffcf2;
-    background-image: radial-gradient(#e6dfca 0.55px, transparent 0.8px);
-    background-size: 4mm 4mm;
-    font-family: "Nunito","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
-    font-size: ${fontPt}pt; line-height: 1.4; }
-  @media print { body { padding: 0; } }
-
-  header { position: relative; display: flex; align-items: center; gap: 6mm; padding: 5mm 7mm 5.5mm; margin-bottom: 6mm;
-    background: linear-gradient(120deg,#dfeaff,#efe6ff 60%,#ffe9f1);
-    border: 0.7mm solid #23306b; border-radius: 6mm 4mm 7mm 3.5mm / 4mm 7mm 3.5mm 6mm;
-    box-shadow: 1.6mm 1.6mm 0 #c3d1ff; }
-  header .titles { flex: 1; min-width: 0; }
-  header h1 { display: inline-block; margin: 0; padding-bottom: 2.4mm; font-family: "Caveat","Kalam","Segoe Print",cursive;
-    font-size: 3.1em; font-weight: 700; line-height: 1; letter-spacing: .005em; color: #23306b;
-    background: url("${WAVE_UNDERLINE}") repeat-x left bottom; }
-  header .meta { margin-top: 1.6mm; font-family: "Kalam","Segoe Print",cursive; font-size: 1em; font-weight: 700; color: #6a45e8; }
-  header .meta::before { content: "✎ "; }
-  header .note { position: relative; flex: 0 0 33%; padding: 3.5mm 4mm 3mm; transform: rotate(2deg);
-    background: #fff4a8; border-radius: 1mm 1mm 5mm 1mm; box-shadow: 1mm 1.4mm 2mm rgba(0,0,0,.18);
-    font-family: "Caveat","Kalam",cursive; font-size: 1.32em; line-height: 1.15; color: #4a3f10; }
-  header .note::before { content: ""; position: absolute; top: -2.6mm; left: 50%; width: 16mm; height: 5mm; margin-left: -8mm;
-    background: rgba(255,143,163,.75); transform: rotate(-4deg); }
-
-  .cards { column-count: ${columns}; column-gap: 6mm; }
-  .card { position: relative; break-inside: avoid; page-break-inside: avoid; margin: 3mm 0 6.5mm; padding: 4mm 4.2mm 3.6mm;
-    background: var(--bg); border: 0.55mm solid var(--ac);
-    border-radius: 4.5mm 3mm 5mm 3.2mm / 3.2mm 5mm 3mm 4.5mm; box-shadow: 1.4mm 1.4mm 0 var(--sh); }
-  .card:nth-child(3n+2) { border-radius: 3mm 5mm 3.4mm 5mm / 5mm 3mm 5mm 3.4mm; }
-  .card:nth-child(3n) { border-radius: 5mm 3.6mm 3mm 4.6mm / 3.6mm 4.6mm 5mm 3mm; }
-  .card:nth-child(odd) { transform: rotate(-.35deg); }
-  .card:nth-child(even) { transform: rotate(.3deg); }
-  .card::before { content: ""; position: absolute; top: -2.5mm; left: 50%; width: 15mm; height: 4.6mm; margin-left: -7.5mm;
-    background: var(--tape); opacity: .8; transform: rotate(-3deg); border-radius: .4mm; }
-  .card:nth-child(even)::before { transform: rotate(3.5deg); left: 38%; }
-
-  .tag { font-size: .62em; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--ac); opacity: .9; }
-  .ico { display: inline-block; margin-right: 1mm; letter-spacing: 0; font-size: 1.25em; vertical-align: -.08em; }
-  .card h2 { display: flex; align-items: center; gap: 2.2mm; margin: 0.8mm 0 2mm; font-family: "Kalam","Segoe Print",cursive;
-    font-size: 1.28em; font-weight: 700; line-height: 1.15; color: var(--ac); }
-  .ttl { background: linear-gradient(transparent 58%, var(--hl) 58%); padding: 0 1mm; margin-left: -1mm; }
-  .num { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 1.55em; height: 1.55em;
-    border-radius: 58% 42% 55% 45% / 48% 56% 44% 52%; background: var(--ac); color: #fff; font-size: .82em; font-weight: 700; }
-
-  .body p { margin: 0 0 1.4mm; }
-  .body p:last-child, .body ul:last-child { margin-bottom: 0; }
-  .body ul { margin: 0 0 1.4mm; padding: 0; list-style: none; }
-  .body li { position: relative; padding-left: 4.6mm; margin-bottom: 1mm; break-inside: avoid; }
-  .body li::before { content: "✦"; position: absolute; left: 0; top: .02em; color: var(--ac); font-size: .85em; }
-  .formula { margin: 1.4mm 0; padding: 2mm 2.6mm; text-align: center; background: #fff;
-    border: 0.4mm dashed var(--ac); border-radius: 3mm 2mm 3.2mm 2mm / 2mm 3.2mm 2mm 3mm;
-    font-family: "Cambria Math","STIX Two Math","Times New Roman",serif; font-size: 1.1em; font-style: italic; overflow-wrap: anywhere; }
-
-  .card.key { column-span: all; margin: 4mm 1.5mm 4mm; padding: 4.5mm 6mm 4.5mm; transform: rotate(-.25deg);
-    border: 0.7mm dashed var(--ac); box-shadow: 1.6mm 1.6mm 0 var(--sh); }
-  .card.key::before { background: rgba(255,120,150,.7); width: 22mm; margin-left: -11mm; left: 50%; }
-  .card.key .tag { display: none; }
-  .card.key h2 { font-family: "Caveat","Kalam",cursive; font-size: 1.9em; margin-bottom: 2.4mm; }
-  .card.key h2::before { content: "❤"; color: var(--ac); font-size: .8em; }
-  .card.key .ttl { background: linear-gradient(transparent 55%, rgba(255,214,0,.55) 55%); }
-  .card.key .body ul { column-count: ${columns === 3 ? 3 : 2}; column-gap: 7mm; }
-
-  footer { display: flex; align-items: center; justify-content: space-between; margin-top: 2mm; padding-top: 1.6mm;
-    border-top: 0.35mm dashed #b9b29a; font-size: .72em; color: #8a8672; }
-  footer .brand { font-family: "Caveat",cursive; font-size: 1.9em; font-weight: 700; line-height: 1; color: #6d4aff; }
+  :root { --orient: ${orientation}; ${vars} }
+  ${BASE_CSS}
+  ${css}
 </style></head>
-<body>
-<header>
-  <div class="titles"><h1>${esc(sheet.title)}</h1>${meta ? `<div class="meta">${esc(meta)}</div>` : ""}</div>
-  ${sheet.summary ? `<div class="note">${esc(sheet.summary)}</div>` : ""}
-</header>
-<main class="cards">
-${cards}
-</main>
-<footer><span><span class="brand">skoolz</span> · fiche de révision</span><span>${esc(date)}</span></footer>
+<body data-style="${style}"${bodyStyle ? ` style="${bodyStyle}"` : ""}>
+${body}
 </body></html>`;
 }
+
+// --- Fiche colorée & fiche compactée : blocs en colonnes -------------------------------------------
+
+function blocks(sheet: ApiSheetDetail, style: "colorful" | "compact", orientation: Orientation): string {
+  const compact = style === "compact";
+  const chars = totalChars(sheet);
+  const fontPt = Math.max(6.6, baseFontPt(chars) - (compact ? 1.2 : 0));
+  const cols = compact
+    ? orientation === "landscape" ? 4 : 3
+    : orientation === "landscape" ? (chars > 2600 ? 4 : 3) : chars > 2400 ? 3 : 2;
+
+  let n = 0;
+  const cards = orderedSections(sheet)
+    .map((section) => {
+      const key = section.type === "key_point";
+      if (!key) n += 1;
+      const hue = key ? KEY_HUE : HUES[(n - 1) % HUES.length];
+      const title = section.title ?? (key ? "À savoir par cœur" : "");
+      return `<section class="card${key ? " key" : ""}" style="${hueStyle(hue)}">
+  <h2>${key ? "" : `<span class="n">${n}.</span>`}<span class="t">${esc(title)}</span></h2>
+  <div class="body t-${section.type}">${renderBody(section)}</div>
+</section>`;
+    })
+    .join("\n");
+
+  return documentShell(
+    sheet,
+    orientation,
+    style,
+    compact ? COMPACT_CSS : BLOCK_CSS,
+    `--cols:${cols};`,
+    `${banner(sheet)}\n<main class="cards">\n${cards}\n</main>\n${footer(sheet)}`,
+    `font-size:${fontPt}pt`,
+  );
+}
+
+// --- Schéma : étapes reliées par des flèches (parcours en serpentin) -------------------------------
+
+function diagram(sheet: ApiSheetDetail, orientation: Orientation): string {
+  const sections = orderedSections(sheet);
+  const baseCols = orientation === "landscape" ? 4 : 3;
+  const cols = Math.max(2, Math.min(baseCols, sections.length));
+  const fontPt = baseFontPt(totalChars(sheet)) - 0.6;
+
+  let n = 0;
+  const boxes = sections
+    .map((section, i) => {
+      const key = section.type === "key_point";
+      if (!key) n += 1;
+      const hue = key ? KEY_HUE : HUES[(n - 1) % HUES.length];
+      const row = Math.floor(i / cols);
+      const c = i % cols;
+      const gridCol = row % 2 === 0 ? c + 1 : cols - c;
+      const last = i === sections.length - 1;
+      const arrow = last ? "" : c < cols - 1 ? (row % 2 === 0 ? "r" : "l") : "d";
+      const glyph = arrow === "r" ? "→" : arrow === "l" ? "←" : "↓";
+      const title = section.title ?? (key ? "À retenir" : "");
+      return `<section class="box${key ? " key" : ""}" style="${hueStyle(hue)};grid-column:${gridCol};grid-row:${row + 1}">
+  <h2>${key ? "" : `<span class="n">${n}</span>`}<span>${esc(title)}</span></h2>
+  <div class="body t-${section.type}">${renderBody(section)}</div>
+  ${arrow ? `<span class="arw ${arrow}">${glyph}</span>` : ""}
+</section>`;
+    })
+    .join("\n");
+
+  return documentShell(
+    sheet,
+    orientation,
+    "diagram",
+    DIAGRAM_CSS,
+    `--cols:${cols};`,
+    `${banner(sheet)}\n<main class="flow">\n${boxes}\n</main>\n${footer(sheet)}`,
+    `font-size:${fontPt}pt`,
+  );
+}
+
+// --- Carte mentale : titre au centre, une branche par section, points en feuilles ------------------
+
+const shorten = (text: string, max: number) => (text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text);
+
+function leafText(line: string): string {
+  const plain = line.replace(/^[-•*]\s+/, "").replace(/^\d{1,2}[.)]\s+/, "");
+  return shorten(plain, 78);
+}
+
+function mindmap(sheet: ApiSheetDetail, orientation: Orientation): string {
+  const sections = orderedSections(sheet);
+  const mapH = USABLE_H[orientation] - 46;
+  const perSide = Math.ceil(sections.length / 2);
+  const fontPx = orientation === "landscape" ? 13.2 : 12.4;
+  const budget = mapH / Math.max(1, perSide);
+  const maxLeaves = Math.max(1, Math.min(7, Math.floor((budget - 40) / (fontPx * 1.36 * 0.86))));
+
+  let n = 0;
+  const side = { left: [] as string[], right: [] as string[] };
+  sections.forEach((section, i) => {
+    const key = section.type === "key_point";
+    if (!key) n += 1;
+    const hue = key ? KEY_HUE : HUES[(n - 1) % HUES.length];
+    const lines = cleanLines(section);
+    const shown = lines.length > maxLeaves ? lines.slice(0, maxLeaves - 1) : lines;
+    const hidden = lines.length - shown.length;
+    const leaves = [
+      ...shown.map((l) => `<li>${soft(leafText(l))}</li>`),
+      ...(hidden > 0 ? [`<li class="more">+ ${hidden} autre${hidden > 1 ? "s" : ""} point${hidden > 1 ? "s" : ""}</li>`] : []),
+    ].join("");
+    const title = esc(shorten(section.title ?? (key ? "À retenir" : "Notion"), 42));
+    const isRight = i % 2 === 0;
+    const node = `<div class="node" data-side="${isRight ? "right" : "left"}">${title}</div>`;
+    const list = `<ul class="leaves">${leaves}</ul>`;
+    const item = `<div class="item" style="${hueStyle(hue)}">${isRight ? node + list : list + node}</div>`;
+    (isRight ? side.right : side.left).push(item);
+  });
+
+  const meta = [sheet.subjectName, sheet.chapter].filter(Boolean).join(" – ");
+  const nodeW = orientation === "landscape" ? "36mm" : "27mm";
+  const coreW = orientation === "landscape" ? "58mm" : "40mm";
+
+  return documentShell(
+    sheet,
+    orientation,
+    "mindmap",
+    MINDMAP_CSS,
+    `--node-w:${nodeW};--core-w:${coreW};`,
+    `<main class="map" style="height:${mapH}px;font-size:${fontPx}px">
+  <div class="col left">${side.left.join("")}</div>
+  <div class="center"><div class="core"><h1>${esc(sheet.title)}</h1>${meta ? `<div class="meta">${esc(meta)}</div>` : ""}</div></div>
+  <div class="col right">${side.right.join("")}</div>
+</main>
+${footer(sheet)}`,
+  );
+}
+
+export function buildSheetHtml(sheet: ApiSheetDetail, orientation: Orientation, style: SheetStyle = "colorful"): string {
+  if (style === "mindmap") return mindmap(sheet, orientation);
+  if (style === "diagram") return diagram(sheet, orientation);
+  return blocks(sheet, style, orientation);
+}
+
+// --- Ajustements faits une fois le document affiché (polices chargées) -----------------------------
 
 // Ajuste la taille du texte pour que la fiche remplisse un nombre entier de pages A4 :
 // une fiche courte est agrandie, une fiche qui déborde à peine d'une page est resserrée
 // (jusqu'à -20 %) pour éviter une dernière page presque vide. Ne dépasse jamais la cible.
-export function fitSheetToPage(doc: Document, orientation: Orientation): void {
-  const header = doc.querySelector("header");
-  const footer = doc.querySelector("footer");
-  if (!header || !footer) return;
+export function fitSheetToPage(doc: Document, orientation: Orientation, maxGrow = 1.6): void {
+  const first = doc.body.firstElementChild;
+  const footerEl = doc.querySelector("footer");
+  if (!first || !footerEl) return;
 
-  const usable = A4_PX[orientation].h - 61; // marges @page de 8 mm en haut et en bas
-  const measure = () => footer.getBoundingClientRect().bottom - header.getBoundingClientRect().top;
+  const usable = USABLE_H[orientation];
+  const measure = () => footerEl.getBoundingClientRect().bottom - first.getBoundingClientRect().top;
   const body = doc.body;
   const start = parseFloat(doc.defaultView?.getComputedStyle(body).fontSize ?? "14");
   const minSize = start * 0.8;
-  const maxSize = start * 1.6;
+  const maxSize = start * maxGrow;
 
   const initial = measure();
   const pages = Math.max(1, Math.ceil(initial / usable));
@@ -256,4 +488,43 @@ export function fitSheetToPage(doc: Document, orientation: Orientation): void {
     size = Math.max(minSize, size * 0.97);
     body.style.fontSize = `${size}px`;
   }
+}
+
+// Trace les liens courbes entre le noyau central et chaque branche (positions mesurées dans le DOM).
+export function drawMindmapLinks(doc: Document): void {
+  const map = doc.querySelector<HTMLElement>(".map");
+  const core = doc.querySelector<HTMLElement>(".core");
+  if (!map || !core) return;
+
+  map.querySelector("svg.links")?.remove();
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = doc.createElementNS(ns, "svg");
+  svg.setAttribute("class", "links");
+
+  const m = map.getBoundingClientRect();
+  const c = core.getBoundingClientRect();
+  const cy = c.top - m.top + c.height / 2;
+
+  map.querySelectorAll<HTMLElement>(".node").forEach((node) => {
+    const r = node.getBoundingClientRect();
+    const toRight = node.dataset.side === "right";
+    const x1 = (toRight ? c.right : c.left) - m.left;
+    const x2 = (toRight ? r.left : r.right) - m.left;
+    const y2 = r.top - m.top + r.height / 2;
+    const mid = x1 + (x2 - x1) / 2;
+    const path = doc.createElementNS(ns, "path");
+    path.setAttribute("d", `M ${x1} ${cy} C ${mid} ${cy}, ${mid} ${y2}, ${x2} ${y2}`);
+    path.setAttribute("fill", "none");
+    path.setAttribute("stroke", doc.defaultView?.getComputedStyle(node).backgroundColor ?? "#6d4aff");
+    path.setAttribute("stroke-width", "3");
+    path.setAttribute("stroke-linecap", "round");
+    svg.appendChild(path);
+  });
+
+  map.insertBefore(svg, map.firstChild);
+}
+
+export function finalizeSheetDocument(doc: Document, style: SheetStyle, orientation: Orientation): void {
+  if (style === "mindmap") drawMindmapLinks(doc);
+  else fitSheetToPage(doc, orientation, style === "compact" ? 1.2 : 1.6);
 }

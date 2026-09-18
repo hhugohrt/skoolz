@@ -60,8 +60,7 @@ export interface ApiSheetDetail extends ApiSheetSummary {
   sections: ApiSheetSection[];
 }
 
-// Choisi à la génération : fiche texte, ou fiche colorée A4 (portrait / paysage) imprimable.
-export type SheetLayout = "text" | "portrait" | "landscape";
+
 
 export type UploadSessionStatus = "pending" | "received" | "consumed" | "expired";
 
@@ -70,6 +69,17 @@ export interface ApiSessionPhoto {
   position: number;
   mimeType: string;
   createdAt: string;
+}
+
+export interface ApiSubjectSuggestion {
+  id: string;
+  name: string;
+}
+
+export interface SheetUpdate {
+  title: string;
+  summary: string;
+  sections: { type: string; title: string | null; content: string }[];
 }
 
 export class ApiError extends Error {
@@ -164,7 +174,21 @@ export const api = {
     request<void>(`/api/courses/${id}`, { method: "DELETE" }, token),
 
   generateSheet: (token: string, courseId: string) =>
-    request<{ sheetId: string }>(`/api/courses/${courseId}/generate`, { method: "POST" }, token),
+    request<{ sheetId: string; suggestedSubject: ApiSubjectSuggestion | null }>(
+      `/api/courses/${courseId}/generate`,
+      { method: "POST" },
+      token,
+    ),
+
+  updateSheet: (token: string, id: string, update: SheetUpdate) =>
+    request<{ sheet: ApiSheetDetail }>(`/api/sheets/${id}`, { method: "PUT", body: JSON.stringify(update) }, token),
+
+  setSheetSubject: (token: string, id: string, subjectId: string | null) =>
+    request<{ sheet: ApiSheetDetail }>(
+      `/api/sheets/${id}/subject`,
+      { method: "PATCH", body: JSON.stringify({ subjectId }) },
+      token,
+    ),
 
   listSheets: (token: string) => request<{ sheets: ApiSheetSummary[] }>("/api/sheets", {}, token),
 
