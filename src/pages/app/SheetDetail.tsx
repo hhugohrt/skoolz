@@ -71,37 +71,19 @@ export default function SheetDetail() {
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <button
-          type="button"
-          disabled
-          className="flex items-center justify-center gap-2 rounded-[14px] border border-border bg-surface-2/60 px-4 py-3 text-[14px] font-semibold text-text-secondary opacity-70"
-          title="Bientôt disponible"
-        >
+        <Link to="/app/revise" className="flex items-center justify-center gap-2 rounded-[14px] border border-border bg-surface-2/60 px-4 py-3 text-[14px] font-semibold text-text transition-colors hover:bg-surface-2">
           <GraduationCap className="h-4 w-4" />
           Réviser cette fiche
-        </button>
-        <button
-          type="button"
-          disabled
-          className="flex items-center justify-center gap-2 rounded-[14px] border border-border bg-surface-2/60 px-4 py-3 text-[14px] font-semibold text-text-secondary opacity-70"
-          title="Bientôt disponible"
-        >
+        </Link>
+        <Link to={`/app/sheets/${id}/quiz`} className="flex items-center justify-center gap-2 rounded-[14px] border border-border bg-surface-2/60 px-4 py-3 text-[14px] font-semibold text-text transition-colors hover:bg-purple/10 hover:text-purple">
           <HelpCircle className="h-4 w-4" />
           Faire un quiz
-        </button>
-        <button
-          type="button"
-          disabled
-          className="flex items-center justify-center gap-2 rounded-[14px] border border-border bg-surface-2/60 px-4 py-3 text-[14px] font-semibold text-text-secondary opacity-70"
-          title="Bientôt disponible"
-        >
+        </Link>
+        <Link to={`/app/sheets/${id}/flashcards`} className="flex items-center justify-center gap-2 rounded-[14px] border border-border bg-surface-2/60 px-4 py-3 text-[14px] font-semibold text-text transition-colors hover:bg-purple/10 hover:text-purple">
           <Layers className="h-4 w-4" />
           Créer des flashcards
-        </button>
+        </Link>
       </div>
-      <p className="mt-2 text-center text-[12px] text-text-secondary">
-        Quiz et flashcards arrivent dans une prochaine version.
-      </p>
     </div>
   );
 }
