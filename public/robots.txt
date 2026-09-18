@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /app/
+Disallow: /onboarding/
+Disallow: /m/
+
+Sitemap: https://www.skoolz.club/sitemap.xml

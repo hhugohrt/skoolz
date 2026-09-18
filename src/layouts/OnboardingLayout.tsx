@@ -1,10 +1,12 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { Logo } from "@/components/Logo";
+import { usePageMeta } from "@/lib/usePageMeta";
 
 const STEPS = ["level", "subjects", "theme", "complete"];
 
 export function OnboardingLayout() {
+  usePageMeta({ title: "Bienvenue — Skoolz", path: "/onboarding" });
   const location = useLocation();
   const currentStep = STEPS.findIndex((step) => location.pathname.endsWith(step));
 

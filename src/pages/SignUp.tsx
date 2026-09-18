@@ -10,8 +10,10 @@ import { PrimaryButton } from "@/components/auth/PrimaryButton";
 import { GoogleIcon } from "@/components/icons/GoogleIcon";
 import { useAuth } from "@/context/AuthContext";
 import { ApiError } from "@/lib/api";
+import { usePageMeta } from "@/lib/usePageMeta";
 
 export default function SignUp() {
+  usePageMeta({ title: "Créer un compte — Skoolz", path: "/signup" });
   const { register } = useAuth();
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
@@ -39,7 +41,7 @@ export default function SignUp() {
       headerPrompt="Déjà un compte ?"
       headerCtaLabel="Se connecter"
       headerCtaTo="/login"
-      mascotSrc="/mascot-signup.png"
+      mascotSrc="/mascot-signup.webp"
     >
       <AuthCard title="Créer un compte" subtitle="Commence ton aventure avec Skoolz !">
         <SocialButton icon={<GoogleIcon className="h-full w-full" />} label="Continuer avec Google" />

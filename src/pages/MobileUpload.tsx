@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { Camera, Loader2, CircleCheck, CircleAlert, Plus, Image as ImageIcon } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
 import { compressImage } from "@/lib/compressImage";
+import { usePageMeta } from "@/lib/usePageMeta";
 import { Logo } from "@/components/Logo";
 import { Mascot } from "@/components/Mascot";
 
@@ -13,6 +14,7 @@ interface LocalPhoto {
 }
 
 export default function MobileUpload() {
+  usePageMeta({ title: "Envoi de photos — Skoolz", path: "/" });
   const { sessionId } = useParams<{ sessionId: string }>();
   const [state, setState] = useState<State>("checking");
   const [error, setError] = useState<string | null>(null);

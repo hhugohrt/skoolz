@@ -2,8 +2,10 @@ import { Outlet } from "react-router-dom";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
+import { usePageMeta } from "@/lib/usePageMeta";
 
 export function AppLayout() {
+  usePageMeta({ title: "Mon espace — Skoolz", path: "/app" });
   return (
     <div className="relative min-h-screen bg-bg">
       <BackgroundBlobs />

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, BookOpen, BarChart3, Users } from "lucide-react";
 import { AuthLayout } from "@/layouts/AuthLayout";
+import { usePageMeta } from "@/lib/usePageMeta";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { SocialButton } from "@/components/auth/SocialButton";
 import { Divider } from "@/components/auth/Divider";
@@ -31,6 +32,7 @@ const heroFeatures: FeatureData[] = [
 ];
 
 export default function SignIn() {
+  usePageMeta({ title: "Se connecter — Skoolz", path: "/login" });
   const { login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");

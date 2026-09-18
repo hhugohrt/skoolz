@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Sparkles,
@@ -13,6 +14,7 @@ import { Logo } from "@/components/Logo";
 import { Mascot } from "@/components/Mascot";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { Footer } from "@/components/layout/Footer";
+import { usePageMeta } from "@/lib/usePageMeta";
 
 const features = [
   {
@@ -55,7 +57,59 @@ const steps = [
   },
 ];
 
+const faqs = [
+  {
+    question: "Skoolz est-il gratuit ?",
+    answer:
+      "Tu peux créer un compte gratuitement et commencer à générer des fiches de révision dès l'inscription.",
+  },
+  {
+    question: "Quels types de cours puis-je importer ?",
+    answer:
+      "Des fichiers PDF, Word (DOC, DOCX), PowerPoint (PPT, PPTX) ou texte (TXT), ainsi que des photos de ton cours, prises avec l'appareil photo ou choisies dans ta galerie.",
+  },
+  {
+    question: "Comment importer un cours en photo depuis mon téléphone ?",
+    answer:
+      "Depuis ton ordinateur, scanne le QR code affiché par Skoolz avec ton téléphone : prends ou choisis une ou plusieurs photos, elles arrivent aussitôt sur ton ordinateur et sont combinées en une seule fiche.",
+  },
+  {
+    question: "La fiche contient-elle tout mon cours ?",
+    answer:
+      "Skoolz condense la forme mais garde le fond : chaque définition, formule, date et exemple du cours est repris, et une vérification compare la fiche au cours d'origine pour repérer les oublis. Relis toujours ta fiche : l'IA peut se tromper.",
+  },
+  {
+    question: "Puis-je imprimer mes fiches de révision ?",
+    answer:
+      "Oui. Tu peux choisir une fiche colorée au format A4, en portrait ou en paysage, puis l'imprimer ou l'enregistrer en PDF.",
+  },
+];
+
+const PAGE_TITLE = "Skoolz — Fiches de révision par IA, colorées et imprimables";
+const PAGE_DESCRIPTION =
+  "Importe ton cours en PDF, Word ou photo : Skoolz génère une fiche de révision synthétique et complète, à imprimer en A4. Gratuit pour commencer.";
+
 export default function Landing() {
+  usePageMeta({ title: PAGE_TITLE, description: PAGE_DESCRIPTION, indexable: true, path: "/" });
+
+  // Données structurées FAQ : elles décrivent exactement les questions visibles plus bas sur la page.
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "faq-jsonld";
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: { "@type": "Answer", text: faq.answer },
+      })),
+    });
+    document.head.appendChild(script);
+    return () => script.remove();
+  }, []);
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-bg">
       <BackgroundBlobs />
@@ -63,7 +117,7 @@ export default function Landing() {
       <div className="relative mx-auto flex min-h-screen max-w-[1672px] flex-col px-5 sm:px-8 md:px-12 xl:px-[88px]">
         <header className="flex items-center justify-between gap-3 py-5 xl:py-6">
           <Logo />
-          <nav className="hidden items-center gap-8 text-[15px] font-medium text-text-secondary md:flex">
+          <nav aria-label="Navigation principale" className="hidden items-center gap-8 text-[15px] font-medium text-text-secondary md:flex">
             <a href="#fonctionnalites" className="transition-colors hover:text-text">
               Fonctionnalités
             </a>
@@ -87,6 +141,7 @@ export default function Landing() {
           </div>
         </header>
 
+        <main>
         <section className="flex flex-col items-center gap-10 pb-16 pt-10 text-center sm:pb-20 sm:pt-14 xl:pb-28 xl:pt-16">
           <div className="flex max-w-[820px] flex-col items-center">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-purple/[0.09] px-4 py-1.5 text-[13px] font-semibold text-purple sm:text-[14px]">
@@ -122,7 +177,7 @@ export default function Landing() {
             </div>
           </div>
 
-          <Mascot src="/mascot-signup.png" className="h-[180px] w-[260px] sm:h-[220px] sm:w-[320px] xl:h-[260px] xl:w-[380px]" />
+          <Mascot priority src="/mascot-signup.webp" className="h-[180px] w-[260px] sm:h-[220px] sm:w-[320px] xl:h-[260px] xl:w-[380px]" />
         </section>
 
         <section id="fonctionnalites" className="scroll-mt-24 py-14 sm:py-20 xl:py-24">
@@ -203,6 +258,25 @@ export default function Landing() {
             </Link>
           </div>
         </section>
+
+        <section id="faq" className="scroll-mt-24 py-14 sm:py-20 xl:py-24">
+          <div className="mx-auto max-w-[640px] text-center">
+            <h2 className="font-display text-[28px] font-bold text-text sm:text-[36px] xl:text-[42px]">
+              Questions fréquentes
+            </h2>
+          </div>
+          <div className="mx-auto mt-8 flex max-w-[760px] flex-col gap-3">
+            {faqs.map((faq) => (
+              <details key={faq.question} className="group rounded-[16px] border border-border bg-white px-5 py-4">
+                <summary className="cursor-pointer list-none text-[16px] font-semibold text-text marker:hidden [&::-webkit-details-marker]:hidden">
+                  <h3 className="inline">{faq.question}</h3>
+                </summary>
+                <p className="mt-2 text-[15px] leading-[1.6] text-text-secondary">{faq.answer}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+        </main>
 
         <div className="pb-5 pt-6 xl:pb-6">
           <Footer />
