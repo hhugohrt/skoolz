@@ -10,6 +10,9 @@ import Privacy from "@/pages/legal/Privacy";
 import LegalNotice from "@/pages/legal/LegalNotice";
 import SignUp from "@/pages/SignUp";
 import SignIn from "@/pages/SignIn";
+import ForgotPassword from "@/pages/ForgotPassword";
+import ResetPassword from "@/pages/ResetPassword";
+import VerifyEmail from "@/pages/VerifyEmail";
 import Dashboard from "@/pages/Dashboard";
 import OnboardingLevel from "@/pages/onboarding/Level";
 import OnboardingSubjects from "@/pages/onboarding/Subjects";
@@ -32,6 +35,9 @@ export default function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<SignIn />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/cgu" element={<Terms />} />
         <Route path="/confidentialite" element={<Privacy />} />
         <Route path="/mentions-legales" element={<LegalNotice />} />

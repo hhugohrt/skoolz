@@ -24,6 +24,10 @@ export default function Privacy() {
             Nous n&rsquo;accédons ni à tes contacts ni à tes autres données Google.
           </li>
           <li>
+            <strong>E-mails de service :</strong> nous t&rsquo;envoyons uniquement des e-mails liés à ton compte
+            (confirmation de ton adresse, réinitialisation du mot de passe), jamais de publicité.
+          </li>
+          <li>
             <strong>Tes contenus :</strong> les cours (fichiers ou photos) que tu importes, les fiches générées et leurs
             modifications.
           </li>
@@ -66,6 +70,10 @@ export default function Privacy() {
             être analysés.
           </li>
           <li>
+            <strong>Resend</strong> : envoi des e-mails de service (confirmation d&rsquo;adresse, mot de passe oublié). Ton
+            adresse e-mail lui est transmise à cette seule fin.
+          </li>
+          <li>
             <strong>Google</strong> : uniquement si tu choisis de te connecter avec ton compte Google.
           </li>
         </ul>
@@ -91,6 +99,10 @@ export default function Privacy() {
           </li>
           <li>Les liens d&rsquo;envoi de photos par QR code expirent au bout de 10 minutes.</li>
           <li>Ta session de connexion expire au bout de 30 jours.</li>
+          <li>
+            Les liens de confirmation d&rsquo;adresse (24 h) et de réinitialisation du mot de passe (1 h) sont à usage
+            unique et stockés uniquement sous forme chiffrée.
+          </li>
           <li>Les journaux techniques sont conservés par l&rsquo;hébergeur pour une durée limitée.</li>
         </ul>
       </LegalSection>
@@ -127,7 +139,8 @@ export default function Privacy() {
       <LegalSection title="10. Sécurité">
         <p>
           Les échanges avec le service sont chiffrés (HTTPS), les mots de passe ne sont jamais stockés en clair et
-          l&rsquo;accès à tes fiches est réservé à ton compte. Aucun système n&rsquo;étant infaillible, nous te conseillons
+          tes fiches ne sont accessibles qu&rsquo;une fois connecté à ton compte, et les fichiers que tu importes sont stockés à
+          des adresses aléatoires non publiées (sans être pour autant protégés par un mot de passe). Aucun système n&rsquo;étant infaillible, nous te conseillons
           de choisir un mot de passe unique et de ne pas importer d&rsquo;informations sensibles inutiles dans tes cours.
         </p>
       </LegalSection>

@@ -15,6 +15,7 @@ export interface ApiUser {
   level: Level | null;
   theme: Theme;
   onboardingCompleted: boolean;
+  emailVerified: boolean;
   createdAt: string;
 }
 
@@ -137,6 +138,18 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ email, password }),
     }),
+
+  forgotPassword: (email: string) =>
+    request<{ ok: true }>("/api/auth/forgot-password", { method: "POST", body: JSON.stringify({ email }) }),
+
+  resetPassword: (token: string, password: string) =>
+    request<{ ok: true }>("/api/auth/reset-password", { method: "POST", body: JSON.stringify({ token, password }) }),
+
+  verifyEmail: (token: string) =>
+    request<{ ok: true }>("/api/auth/verify-email", { method: "POST", body: JSON.stringify({ token }) }),
+
+  sendVerification: (token: string) =>
+    request<{ ok: true; alreadyVerified?: boolean }>("/api/auth/send-verification", { method: "POST" }, token),
 
   googleLogin: (accessToken: string) =>
     request<{ token: string; user: ApiUser; isNew: boolean }>("/api/auth/google", {

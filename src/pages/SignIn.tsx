@@ -92,12 +92,9 @@ export default function SignIn() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            <button
-              type="button"
-              className="self-end text-[14px] font-semibold text-purple hover:underline"
-            >
+            <Link to="/forgot-password" className="self-end text-[14px] font-semibold text-purple hover:underline">
               Mot de passe oublié ?
-            </button>
+            </Link>
           </div>
 
           {error && <p className="text-[14px] text-red-500">{error}</p>}
