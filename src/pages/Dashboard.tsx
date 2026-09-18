@@ -1,10 +1,8 @@
-import { useState } from "react";
 import { FileUp, Sparkles, FileCheck2, FolderCheck } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { CourseDropzone } from "@/components/courses/CourseDropzone";
 import { QrCourseImportButton } from "@/components/courses/QrCourseImport";
-import { FormatToggle } from "@/components/courses/FormatToggle";
-import { DEFAULT_LAYOUT, type SheetLayout } from "@/lib/sheetStyles";
+import { DEFAULT_LAYOUT, STYLE_OPTIONS } from "@/lib/sheetStyles";
 
 const STEPS = [
   {
@@ -31,7 +29,7 @@ const STEPS = [
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [layout, setLayout] = useState<SheetLayout>(DEFAULT_LAYOUT);
+  const layout = DEFAULT_LAYOUT;
 
   return (
     <div>
@@ -47,10 +45,6 @@ export default function Dashboard() {
           Importe ton cours et Skoolz génère automatiquement une fiche claire, synthétique et prête à réviser.
         </p>
 
-        <div className="mt-6">
-          <FormatToggle value={layout} onChange={setLayout} />
-        </div>
-
         <div className="mt-4">
           <CourseDropzone layout={layout} />
         </div>
@@ -58,6 +52,19 @@ export default function Dashboard() {
         <div className="mt-4 flex justify-center">
           <QrCourseImportButton layout={layout} />
         </div>
+
+        <p className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[13px] text-text-secondary">
+          <span>Chaque cours est généré sous toutes ces formes :</span>
+          {STYLE_OPTIONS.map((option) => (
+            <span
+              key={option.value}
+              className="inline-flex items-center gap-1 rounded-full bg-purple/[0.08] px-2.5 py-1 font-medium text-purple"
+            >
+              <option.icon className="h-3.5 w-3.5" />
+              {option.label}
+            </span>
+          ))}
+        </p>
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
