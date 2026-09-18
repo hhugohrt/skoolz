@@ -178,6 +178,9 @@ export const api = {
       token,
     ),
 
+  updateProfile: (token: string, payload: { firstName?: string; level?: Level; subjectIds?: string[] }) =>
+    request<{ user: ApiUser }>("/api/me", { method: "PATCH", body: JSON.stringify(payload) }, token),
+
   getMySubjectIds: (token: string) => request<{ subjectIds: string[] }>("/api/onboarding/subjects", {}, token),
 
   listCourses: (token: string) => request<{ courses: ApiCourse[] }>("/api/courses", {}, token),

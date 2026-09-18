@@ -12,7 +12,7 @@ export function AppLayout() {
       <BackgroundBlobs />
       <Sidebar />
       <MobileNav />
-      <main className="relative mx-auto max-w-[1100px] px-5 py-8 pb-28 sm:px-8 lg:pl-[112px] lg:pr-8 lg:pb-8">
+      <main className="relative mx-auto max-w-[1100px] px-5 py-8 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-8 lg:pl-[112px] lg:pr-8 lg:pb-8">
         <VerifyEmailBanner />
         <Outlet />
       </main>

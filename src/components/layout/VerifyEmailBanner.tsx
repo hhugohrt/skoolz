@@ -41,7 +41,7 @@ export function VerifyEmailBanner() {
           type="button"
           onClick={resend}
           disabled={state === "sending"}
-          className="flex items-center gap-1.5 rounded-full bg-amber-600 px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-amber-700 disabled:opacity-60"
+          className="flex w-full items-center justify-center gap-1.5 rounded-full bg-amber-600 px-4 py-2 sm:w-auto text-[13px] font-semibold text-white transition-colors hover:bg-amber-700 disabled:opacity-60"
         >
           {state === "sending" && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
           Renvoyer l&rsquo;e-mail

@@ -1,10 +1,9 @@
 import { NavLink } from "react-router-dom";
-import { Home, BookOpen, FileText, GraduationCap, User, Settings } from "lucide-react";
+import { Home, BookOpen, GraduationCap, User, Settings } from "lucide-react";
 
 const NAV_ITEMS = [
   { to: "/app", label: "Accueil", icon: Home, end: true },
   { to: "/app/courses", label: "Cours", icon: BookOpen },
-  { to: "/app/sheets", label: "Fiches", icon: FileText },
   { to: "/app/revise", label: "Réviser", icon: GraduationCap },
   { to: "/app/profile", label: "Profil", icon: User },
 ];
