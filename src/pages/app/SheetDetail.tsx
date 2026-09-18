@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
-import { GraduationCap, HelpCircle, Layers, Download, TriangleAlert } from "lucide-react";
+import { GraduationCap, HelpCircle, Layers } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { api, type ApiSheetDetail } from "@/lib/api";
+import { api, type ApiSheetDetail, type SheetLayout } from "@/lib/api";
+import { SheetA4Preview } from "@/components/sheets/SheetA4Preview";
+import type { Orientation } from "@/lib/sheetHtml";
 
 const SECTION_LABELS: Record<string, string> = {
   notion: "Notion essentielle",
@@ -20,10 +22,11 @@ export default function SheetDetail() {
   const { id } = useParams<{ id: string }>();
   const { token } = useAuth();
   const location = useLocation();
-  const imagesError = (location.state as { imagesError?: string } | null)?.imagesError;
+  const requestedLayout = (location.state as { layout?: SheetLayout } | null)?.layout ?? "text";
   const [sheet, setSheet] = useState<ApiSheetDetail | null>(null);
   const [error, setError] = useState(false);
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [view, setView] = useState<"text" | "a4">(requestedLayout === "text" ? "text" : "a4");
+  const [orientation, setOrientation] = useState<Orientation>(requestedLayout === "landscape" ? "landscape" : "portrait");
 
   useEffect(() => {
     if (!id) return;
@@ -32,23 +35,6 @@ export default function SheetDetail() {
       .then(({ sheet }) => setSheet(sheet))
       .catch(() => setError(true));
   }, [token, id]);
-
-  useEffect(() => {
-    if (!sheet || sheet.images.length === 0) return;
-    let cancelled = false;
-    const urls: string[] = [];
-    Promise.all(sheet.images.map((image) => api.getSheetImageBlob(token!, sheet.id, image.id)))
-      .then((blobs) => {
-        if (cancelled) return;
-        blobs.forEach((blob) => urls.push(URL.createObjectURL(blob)));
-        setImageUrls([...urls]);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-      urls.forEach((url) => URL.revokeObjectURL(url));
-    };
-  }, [sheet, token]);
 
   if (error) {
     return <p className="text-[15px] text-text-secondary">Fiche introuvable.</p>;
@@ -76,43 +62,33 @@ export default function SheetDetail() {
         <p className="mt-1 text-[15px] text-text">{sheet.summary}</p>
       </div>
 
-      {imagesError && (
-        <p className="mt-4 flex items-start gap-2 rounded-[14px] border border-red-200 bg-red-50 p-3 text-[14px] text-red-600">
-          <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" />
-          <span>La fiche visuelle n&rsquo;a pas pu être créée : {imagesError} Ta fiche texte est disponible ci-dessous.</span>
-        </p>
-      )}
+      <div role="tablist" className="mt-6 inline-flex rounded-full border border-border bg-white p-1">
+        {(
+          [
+            { value: "text", label: "Fiche texte" },
+            { value: "a4", label: "Fiche A4 colorée" },
+          ] as const
+        ).map((tab) => (
+          <button
+            key={tab.value}
+            type="button"
+            role="tab"
+            aria-selected={view === tab.value}
+            onClick={() => setView(tab.value)}
+            className={`rounded-full px-5 py-2 text-[14px] font-semibold transition-colors ${
+              view === tab.value ? "bg-purple text-white" : "text-text-secondary hover:text-text"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
-      {sheet.images.length > 0 && (
-        <div className="mt-6">
-          <p className="text-[13px] font-semibold uppercase tracking-wide text-text-secondary">Fiche visuelle</p>
-          <p className="mt-1 text-[13px] text-text-secondary">
-            Image dessinée par l&rsquo;IA : le texte peut contenir des erreurs. Fie-toi aux sections ci-dessous.
-          </p>
-          <div className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {sheet.images.map((image, index) => (
-              <div key={image.id} className="overflow-hidden rounded-[14px] border border-border/60 bg-white">
-                {imageUrls[index] ? (
-                  <>
-                    <img src={imageUrls[index]} alt={`Fiche visuelle ${index + 1}`} className="w-full" />
-                    <a
-                      href={imageUrls[index]}
-                      download={`${sheet.title}${sheet.images.length > 1 ? ` (${index + 1})` : ""}.png`}
-                      className="flex items-center justify-center gap-2 border-t border-border/60 px-4 py-3 text-[14px] font-semibold text-purple transition-colors hover:bg-purple/[0.05]"
-                    >
-                      <Download className="h-4 w-4" />
-                      Télécharger
-                    </a>
-                  </>
-                ) : (
-                  <div className="aspect-[2/3] animate-pulse bg-surface-2" />
-                )}
-              </div>
-            ))}
-          </div>
+      {view === "a4" ? (
+        <div className="mt-4">
+          <SheetA4Preview sheet={sheet} orientation={orientation} onOrientationChange={setOrientation} />
         </div>
-      )}
-
+      ) : (
       <div className="mt-6 flex flex-col gap-4">
         {sheet.sections.map((section) => (
           <div key={section.id} className="rounded-[14px] border border-border/60 bg-white p-5">
@@ -126,6 +102,7 @@ export default function SheetDetail() {
           </div>
         ))}
       </div>
+      )}
 
       <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Link to="/app/revise" className="flex items-center justify-center gap-2 rounded-[14px] border border-border bg-surface-2/60 px-4 py-3 text-[14px] font-semibold text-text transition-colors hover:bg-surface-2">

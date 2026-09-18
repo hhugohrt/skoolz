@@ -1,14 +1,15 @@
-import { FileText, Image as ImageIcon } from "lucide-react";
-import type { SheetFormat } from "@/lib/api";
+import { FileText, RectangleHorizontal, RectangleVertical } from "lucide-react";
+import type { SheetLayout } from "@/lib/api";
 
-const OPTIONS: { value: SheetFormat; label: string; hint: string; icon: typeof FileText }[] = [
-  { value: "text", label: "Fiche texte", hint: "Rapide", icon: FileText },
-  { value: "image", label: "Fiche visuelle", hint: "Image · expérimental", icon: ImageIcon },
+const OPTIONS: { value: SheetLayout; label: string; hint: string; icon: typeof FileText }[] = [
+  { value: "text", label: "Fiche texte", hint: "Simple à relire", icon: FileText },
+  { value: "portrait", label: "Fiche A4 portrait", hint: "Colorée, imprimable", icon: RectangleVertical },
+  { value: "landscape", label: "Fiche A4 paysage", hint: "Colorée, imprimable", icon: RectangleHorizontal },
 ];
 
-export function FormatToggle({ value, onChange }: { value: SheetFormat; onChange: (format: SheetFormat) => void }) {
+export function FormatToggle({ value, onChange }: { value: SheetLayout; onChange: (layout: SheetLayout) => void }) {
   return (
-    <div role="radiogroup" aria-label="Format de la fiche" className="grid grid-cols-2 gap-2.5">
+    <div role="radiogroup" aria-label="Format de la fiche" className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
       {OPTIONS.map((option) => {
         const active = option.value === value;
         return (

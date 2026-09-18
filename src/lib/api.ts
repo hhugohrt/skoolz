@@ -56,17 +56,12 @@ export interface ApiSheetSection {
   content: string;
 }
 
-export interface ApiSheetImage {
-  id: string;
-  position: number;
-}
-
 export interface ApiSheetDetail extends ApiSheetSummary {
   sections: ApiSheetSection[];
-  images: ApiSheetImage[];
 }
 
-export type SheetFormat = "text" | "image";
+// Choisi à la génération : fiche texte, ou fiche colorée A4 (portrait / paysage) imprimable.
+export type SheetLayout = "text" | "portrait" | "landscape";
 
 export type UploadSessionStatus = "pending" | "received" | "consumed" | "expired";
 
@@ -168,15 +163,8 @@ export const api = {
   deleteCourse: (token: string, id: string) =>
     request<void>(`/api/courses/${id}`, { method: "DELETE" }, token),
 
-  generateSheet: (token: string, courseId: string, format: SheetFormat = "text") =>
-    request<{ sheetId: string; imagesError?: string }>(
-      `/api/courses/${courseId}/generate`,
-      { method: "POST", body: JSON.stringify({ format }) },
-      token,
-    ),
-
-  getSheetImageBlob: (token: string, sheetId: string, imageId: string) =>
-    requestBlob(`/api/sheets/${sheetId}/images/${imageId}/file`, token),
+  generateSheet: (token: string, courseId: string) =>
+    request<{ sheetId: string }>(`/api/courses/${courseId}/generate`, { method: "POST" }, token),
 
   listSheets: (token: string) => request<{ sheets: ApiSheetSummary[] }>("/api/sheets", {}, token),
 

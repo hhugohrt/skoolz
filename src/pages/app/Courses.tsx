@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FileText, Loader2, TriangleAlert, Clock } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { api, type ApiCourse, type SheetFormat } from "@/lib/api";
+import { api, type ApiCourse, type SheetLayout } from "@/lib/api";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CourseDropzone } from "@/components/courses/CourseDropzone";
 import { QrCourseImportButton } from "@/components/courses/QrCourseImport";
@@ -20,7 +20,7 @@ export default function Courses() {
   const [courses, setCourses] = useState<ApiCourse[] | null>(null);
   const [sheetByCourse, setSheetByCourse] = useState<Record<string, string>>({});
   const [retryingId, setRetryingId] = useState<string | null>(null);
-  const [format, setFormat] = useState<SheetFormat>("text");
+  const [layout, setLayout] = useState<SheetLayout>("text");
 
   function refresh() {
     api.listCourses(token!).then(({ courses }) => setCourses(courses));
@@ -36,7 +36,7 @@ export default function Courses() {
   async function retry(courseId: string) {
     setRetryingId(courseId);
     try {
-      await api.generateSheet(token!, courseId, format);
+      await api.generateSheet(token!, courseId);
     } catch {
       // l'erreur est déjà stockée sur le cours et affichée via son statut
     } finally {
@@ -50,15 +50,15 @@ export default function Courses() {
       <h1 className="font-display text-[26px] font-bold text-text sm:text-[30px]">Tes cours</h1>
 
       <div className="mt-6">
-        <FormatToggle value={format} onChange={setFormat} />
+        <FormatToggle value={layout} onChange={setLayout} />
       </div>
 
       <div className="mt-4">
-        <CourseDropzone format={format} onUploaded={refresh} />
+        <CourseDropzone layout={layout} onUploaded={refresh} />
       </div>
 
       <div className="mt-4 flex justify-center">
-        <QrCourseImportButton format={format} onImported={refresh} />
+        <QrCourseImportButton layout={layout} onImported={refresh} />
       </div>
 
       <div className="mt-8">
@@ -110,7 +110,7 @@ export default function Courses() {
                         disabled={retryingId === course.id}
                         className="rounded-full bg-purple/[0.09] px-4 py-2 text-[14px] font-semibold text-purple transition-colors hover:bg-purple/[0.15] disabled:opacity-60"
                       >
-                        {retryingId === course.id ? "Génération…" : format === "image" ? "Générer la fiche visuelle" : "Générer la fiche"}
+                        {retryingId === course.id ? "Génération…" : "Générer la fiche"}
                       </button>
                     )}
                   </div>

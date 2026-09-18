@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
 import { Smartphone, Loader2, CircleAlert, RotateCcw } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { api, ApiError, type ApiSessionPhoto, type SheetFormat } from "@/lib/api";
+import { api, ApiError, type ApiSessionPhoto, type SheetLayout } from "@/lib/api";
 import { Modal } from "@/components/ui/Modal";
 
 type State = "loading" | "waiting" | "review" | "importing" | "expired" | "error";
 
-export function QrCourseImportButton({ format, onImported }: { format: SheetFormat; onImported?: () => void }) {
+export function QrCourseImportButton({ layout, onImported }: { layout: SheetLayout; onImported?: () => void }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -22,7 +22,7 @@ export function QrCourseImportButton({ format, onImported }: { format: SheetForm
         Importer depuis ton téléphone
       </button>
 
-      {open && <QrCourseImportModal format={format} onClose={() => setOpen(false)} onImported={onImported} />}
+      {open && <QrCourseImportModal layout={layout} onClose={() => setOpen(false)} onImported={onImported} />}
     </>
   );
 }
@@ -32,11 +32,11 @@ interface Thumbnail extends ApiSessionPhoto {
 }
 
 function QrCourseImportModal({
-  format,
+  layout,
   onClose,
   onImported,
 }: {
-  format: SheetFormat;
+  layout: SheetLayout;
   onClose: () => void;
   onImported?: () => void;
 }) {
@@ -172,9 +172,9 @@ function QrCourseImportModal({
     setState("importing");
     try {
       const { course } = await api.importUploadSession(token!, sessionId);
-      const { sheetId, imagesError } = await api.generateSheet(token!, course.id, format);
+      const { sheetId } = await api.generateSheet(token!, course.id);
       onImported?.();
-      navigate(`/app/sheets/${sheetId}`, { state: { imagesError } });
+      navigate(`/app/sheets/${sheetId}`, { state: { layout } });
     } catch (err) {
       setState("error");
       setError(err instanceof ApiError ? err.message : "Impossible de générer la fiche.");
@@ -247,7 +247,7 @@ function QrCourseImportModal({
           <>
             <Loader2 className="h-8 w-8 animate-spin text-purple" />
             <p className="mt-3 text-[14px] font-semibold text-text">
-              {format === "image" ? "Je dessine ta fiche… (environ 1 minute)" : "Je prépare ta fiche…"}
+              Je prépare ta fiche…
             </p>
           </>
         )}

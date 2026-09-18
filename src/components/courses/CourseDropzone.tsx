@@ -2,18 +2,18 @@ import { useRef, useState, type DragEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { UploadCloud, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { api, ApiError, type SheetFormat } from "@/lib/api";
+import { api, ApiError, type SheetLayout } from "@/lib/api";
 
 type Phase = "idle" | "uploading" | "generating" | "error";
 
 const ACCEPTED = ".pdf,.doc,.docx,.ppt,.pptx,.txt";
 
 interface CourseDropzoneProps {
-  format: SheetFormat;
+  layout: SheetLayout;
   onUploaded?: () => void;
 }
 
-export function CourseDropzone({ format, onUploaded }: CourseDropzoneProps) {
+export function CourseDropzone({ layout, onUploaded }: CourseDropzoneProps) {
   const { token } = useAuth();
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -27,9 +27,9 @@ export function CourseDropzone({ format, onUploaded }: CourseDropzoneProps) {
     try {
       const { course } = await api.uploadCourse(token!, file);
       setPhase("generating");
-      const { sheetId, imagesError } = await api.generateSheet(token!, course.id, format);
+      const { sheetId } = await api.generateSheet(token!, course.id);
       onUploaded?.();
-      navigate(`/app/sheets/${sheetId}`, { state: { imagesError } });
+      navigate(`/app/sheets/${sheetId}`, { state: { layout } });
     } catch (err) {
       setPhase("error");
       setError(err instanceof ApiError ? err.message : "Impossible d'importer ce cours pour le moment.");
@@ -76,11 +76,7 @@ export function CourseDropzone({ format, onUploaded }: CourseDropzoneProps) {
           <>
             <Loader2 className="h-8 w-8 animate-spin text-purple" />
             <p className="text-[16px] font-semibold text-text">
-              {phase === "uploading"
-                ? "Import de ton cours…"
-                : format === "image"
-                  ? "Je dessine ta fiche… (environ 1 minute)"
-                  : "Je prépare ta fiche…"}
+              {phase === "uploading" ? "Import de ton cours…" : "Je prépare ta fiche…"}
             </p>
           </>
         ) : (

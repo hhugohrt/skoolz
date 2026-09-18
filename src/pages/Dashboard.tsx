@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { CourseDropzone } from "@/components/courses/CourseDropzone";
 import { QrCourseImportButton } from "@/components/courses/QrCourseImport";
 import { FormatToggle } from "@/components/courses/FormatToggle";
-import type { SheetFormat } from "@/lib/api";
+import type { SheetLayout } from "@/lib/api";
 
 const STEPS = [
   {
@@ -31,7 +31,7 @@ const STEPS = [
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [format, setFormat] = useState<SheetFormat>("text");
+  const [layout, setLayout] = useState<SheetLayout>("text");
 
   return (
     <div>
@@ -48,15 +48,15 @@ export default function Dashboard() {
         </p>
 
         <div className="mt-6">
-          <FormatToggle value={format} onChange={setFormat} />
+          <FormatToggle value={layout} onChange={setLayout} />
         </div>
 
         <div className="mt-4">
-          <CourseDropzone format={format} />
+          <CourseDropzone layout={layout} />
         </div>
 
         <div className="mt-4 flex justify-center">
-          <QrCourseImportButton format={format} />
+          <QrCourseImportButton layout={layout} />
         </div>
       </div>
 
