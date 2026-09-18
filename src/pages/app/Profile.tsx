@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { Check, Loader2, Pencil, Plus, Settings as SettingsIcon } from "lucide-react";
+import { Check, Loader2, Pencil, Plus } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { api, ApiError, type ApiSubject, type Level } from "@/lib/api";
 
@@ -100,15 +99,8 @@ export default function Profile() {
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="font-display text-[26px] font-bold text-text sm:text-[30px]">Profil</h1>
-        <Link
-          to="/app/settings"
-          className="flex items-center gap-1.5 rounded-full border border-border bg-white px-4 py-2 text-[14px] font-semibold text-text-secondary transition-colors hover:text-text lg:hidden"
-        >
-          <SettingsIcon className="h-4 w-4" /> Paramètres
-        </Link>
-      </div>
+      <h1 className="font-display text-[26px] font-bold text-text sm:text-[30px]">Profil</h1>
+
 
       <div className="mt-6 flex items-center gap-4 rounded-[20px] border border-border/60 bg-white p-5 sm:p-6">
         <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-purple text-[20px] font-bold text-white">
