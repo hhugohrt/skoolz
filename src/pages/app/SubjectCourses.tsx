@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, FileText } from "lucide-react";
+import { ArrowLeft, FileText, Lock } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { api, type ApiSheetSummary } from "@/lib/api";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -62,8 +62,13 @@ export default function SubjectCourses() {
                       <FileText className="h-[18px] w-[18px]" />
                     </span>
                     <p className="mt-3 text-[16px] font-semibold text-text">{sheet.title}</p>
-                    <p className="mt-3 text-[12px] text-text-secondary">
+                    <p className="mt-3 flex items-center gap-2 text-[12px] text-text-secondary">
                       {new Date(sheet.createdAt).toLocaleDateString("fr-FR")}
+                      {sheet.locked && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-purple/10 px-2 py-0.5 font-semibold text-purple">
+                          <Lock className="h-3 w-3" /> Verrouillée
+                        </span>
+                      )}
                     </p>
                   </Link>
                 ))}

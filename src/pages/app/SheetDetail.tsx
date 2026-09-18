@@ -6,6 +6,7 @@ import { api, type ApiSheetDetail, type ApiSubjectSuggestion } from "@/lib/api";
 import { SheetA4Preview } from "@/components/sheets/SheetA4Preview";
 import { SheetEditor } from "@/components/sheets/SheetEditor";
 import { SubjectPrompt } from "@/components/sheets/SubjectPrompt";
+import { LockedArea } from "@/components/billing/LockedArea";
 import { SECTION_LABELS } from "@/lib/sectionLabels";
 import { DEFAULT_LAYOUT, STYLE_OPTIONS, isPrintableStyle, type Orientation, type SheetLayout, type SheetView } from "@/lib/sheetStyles";
 
@@ -71,16 +72,19 @@ export default function SheetDetail() {
       {!editing && (
         <>
           <h1 className="font-display mt-2 text-[28px] font-bold text-text sm:text-[34px]">{sheet.title}</h1>
-
-          <div className="mt-4 rounded-[14px] border border-border/60 bg-surface-2/60 p-4">
-            <p className="text-[13px] font-semibold uppercase tracking-wide text-text-secondary">Résumé express</p>
-            <p className="mt-1 text-[15px] text-text">{sheet.summary}</p>
-          </div>
         </>
       )}
 
       {showSubjectPrompt && !editing && (
         <SubjectPrompt sheet={sheet} suggestion={navState.suggestedSubject ?? null} onSheetChange={setSheet} />
+      )}
+
+      <LockedArea locked={sheet.locked && !editing}>
+      {!editing && (
+        <div className="mt-4 rounded-[14px] border border-border/60 bg-surface-2/60 p-4">
+          <p className="text-[13px] font-semibold uppercase tracking-wide text-text-secondary">Résumé express</p>
+          <p className="mt-1 text-[15px] text-text">{sheet.summary}</p>
+        </div>
       )}
 
       {!editing && (
@@ -159,7 +163,9 @@ export default function SheetDetail() {
         </>
       )}
 
-      {!editing && (
+      </LockedArea>
+
+      {!editing && !sheet.locked && (
         <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
           <Link to="/app/revise" className="flex items-center justify-center gap-2 rounded-[14px] border border-border bg-surface-2/60 px-4 py-3 text-[14px] font-semibold text-text transition-colors hover:bg-surface-2">
             <GraduationCap className="h-4 w-4" />

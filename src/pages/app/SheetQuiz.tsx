@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { CheckCircle2, ChevronRight } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { api, type ApiSheetDetail } from "@/lib/api";
+import { LockedNotice } from "@/components/billing/LockedArea";
 
 export default function SheetQuiz() {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +18,13 @@ export default function SheetQuiz() {
   }, [id, token]);
 
   const questions = useMemo(() => sheet?.sections.slice(0, 8) ?? [], [sheet]);
+  if (sheet?.locked)
+    return (
+      <div className="mx-auto max-w-[720px]">
+        <Link to={`/app/sheets/${id}`} className="text-[14px] font-semibold text-purple hover:underline">← Retour à la fiche</Link>
+        <LockedNotice />
+      </div>
+    );
   if (!sheet) return <p className="text-[15px] text-text-secondary">Chargement du quiz…</p>;
   if (!questions.length) return <p className="text-[15px] text-text-secondary">Cette fiche ne contient pas assez de notions.</p>;
   const done = index >= questions.length;

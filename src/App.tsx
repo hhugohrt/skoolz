@@ -19,6 +19,7 @@ import OnboardingSubjects from "@/pages/onboarding/Subjects";
 import OnboardingInstall from "@/pages/onboarding/Install";
 import OnboardingComplete from "@/pages/onboarding/Complete";
 import Courses from "@/pages/app/Courses";
+import PayParent from "@/pages/PayParent";
 import SubjectCourses from "@/pages/app/SubjectCourses";
 import SheetDetail from "@/pages/app/SheetDetail";
 import SheetQuiz from "@/pages/app/SheetQuiz";
@@ -41,6 +42,7 @@ export default function App() {
         <Route path="/cgu" element={<Terms />} />
         <Route path="/confidentialite" element={<Privacy />} />
         <Route path="/mentions-legales" element={<LegalNotice />} />
+        <Route path="/pay/:token" element={<PayParent />} />
         <Route path="/m/:sessionId" element={<MobileUpload />} />
 
         <Route

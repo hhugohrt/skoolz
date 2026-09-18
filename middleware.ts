@@ -8,7 +8,7 @@ import { next } from "@vercel/edge";
 function isPublicPath(pathname: string): boolean {
   if (pathname === "/") return true;
   if (pathname === "/cgu" || pathname === "/confidentialite" || pathname === "/mentions-legales") return true;
-  if (pathname.startsWith("/m/")) return true;
+  if (pathname.startsWith("/m/") || pathname.startsWith("/pay/")) return true;
   if (/\.[a-zA-Z0-9]+$/.test(pathname)) return true;
   return false;
 }

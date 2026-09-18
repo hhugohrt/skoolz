@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { RotateCcw } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { api, type ApiSheetDetail } from "@/lib/api";
+import { LockedNotice } from "@/components/billing/LockedArea";
 
 export default function SheetFlashcards() {
   const { id } = useParams<{ id: string }>();
@@ -11,6 +12,13 @@ export default function SheetFlashcards() {
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   useEffect(() => { if (id) api.getSheet(token!, id).then(({ sheet }) => setSheet(sheet)); }, [id, token]);
+  if (sheet?.locked)
+    return (
+      <div className="mx-auto max-w-[720px]">
+        <Link to={`/app/sheets/${id}`} className="text-[14px] font-semibold text-purple hover:underline">← Retour à la fiche</Link>
+        <LockedNotice />
+      </div>
+    );
   if (!sheet) return <p className="text-[15px] text-text-secondary">Préparation des cartes…</p>;
   const cards = sheet.sections;
   if (!cards.length) return <p className="text-[15px] text-text-secondary">Pas encore de cartes pour cette fiche.</p>;

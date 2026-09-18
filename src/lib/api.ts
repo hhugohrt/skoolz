@@ -16,6 +16,7 @@ export interface ApiUser {
   theme: Theme;
   onboardingCompleted: boolean;
   emailVerified: boolean;
+  isPremium: boolean;
   createdAt: string;
 }
 
@@ -47,6 +48,8 @@ export interface ApiSheetSummary {
   subjectId: string | null;
   subjectName: string | null;
   chapter: string | null;
+  // Compte gratuit : le contenu est masqué côté serveur.
+  locked: boolean;
   createdAt: string;
 }
 
@@ -177,6 +180,12 @@ export const api = {
       { method: "POST", body: JSON.stringify(payload) },
       token,
     ),
+
+  createParentLink: (token: string) =>
+    request<{ url: string }>("/api/billing/parent-link", { method: "POST" }, token),
+
+  getParentInvite: (parentToken: string) =>
+    request<{ firstName: string }>(`/api/billing/parent/${encodeURIComponent(parentToken)}`),
 
   updateProfile: (token: string, payload: { firstName?: string; level?: Level; subjectIds?: string[] }) =>
     request<{ user: ApiUser }>("/api/me", { method: "PATCH", body: JSON.stringify(payload) }, token),
