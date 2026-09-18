@@ -62,7 +62,6 @@ export default function SubjectCourses() {
                       <FileText className="h-[18px] w-[18px]" />
                     </span>
                     <p className="mt-3 text-[16px] font-semibold text-text">{sheet.title}</p>
-                    <p className="mt-1 line-clamp-2 text-[13px] text-text-secondary">{sheet.summary}</p>
                     <p className="mt-3 text-[12px] text-text-secondary">
                       {new Date(sheet.createdAt).toLocaleDateString("fr-FR")}
                     </p>
