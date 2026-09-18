@@ -6,7 +6,7 @@ import { api, ApiError, type SheetLayout } from "@/lib/api";
 
 type Phase = "idle" | "uploading" | "generating" | "error";
 
-const ACCEPTED = ".pdf,.doc,.docx,.ppt,.pptx,.txt";
+const ACCEPTED = ".pdf,.doc,.docx,.ppt,.pptx,.txt,image/*";
 
 interface CourseDropzoneProps {
   layout: SheetLayout;
@@ -86,7 +86,7 @@ export function CourseDropzone({ layout, onUploaded }: CourseDropzoneProps) {
             </span>
             <p className="text-[16px] font-semibold text-text">Glisse ton fichier ici</p>
             <p className="text-[14px] text-text-secondary">ou clique pour importer un cours</p>
-            <p className="mt-1 text-[13px] text-text-secondary">PDF, DOC, DOCX, PPT, PPTX, TXT — 20 Mo max</p>
+            <p className="mt-1 text-[13px] text-text-secondary">PDF, DOC, DOCX, PPT, PPTX, TXT ou photo — 20 Mo max</p>
           </>
         )}
       </div>
