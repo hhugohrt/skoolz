@@ -1,22 +1,32 @@
+import { Link } from "react-router-dom";
 import { ChevronDown, Globe } from "lucide-react";
-
-const links = [
-  { label: "À propos", href: "#" },
-  { label: "Contact", href: "#" },
-  { label: "CGU", href: "#" },
-  { label: "Confidentialité", href: "#" },
-  { label: "Aide", href: "#" },
-];
+import { LEGAL } from "@/lib/legal";
 
 export function Footer() {
   return (
     <footer className="flex flex-col items-center justify-between gap-3 py-2 text-[13px] text-text-secondary sm:text-[15px] md:flex-row">
-      <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 sm:gap-x-7">
-        {links.map((link) => (
-          <a key={link.label} href={link.href} className="transition-colors hover:text-text">
-            {link.label}
+      <nav aria-label="Liens légaux" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 sm:gap-x-7">
+        <Link to="/mentions-legales" className="transition-colors hover:text-text">
+          Mentions légales
+        </Link>
+        <Link to="/cgu" className="transition-colors hover:text-text">
+          CGU
+        </Link>
+        <Link to="/confidentialite" className="transition-colors hover:text-text">
+          Confidentialité
+        </Link>
+        {LEGAL.contactEmail ? (
+          <a href={`mailto:${LEGAL.contactEmail}`} className="transition-colors hover:text-text">
+            Contact
           </a>
-        ))}
+        ) : (
+          <Link to="/mentions-legales#contact" className="transition-colors hover:text-text">
+            Contact
+          </Link>
+        )}
+        <a href="/#faq" className="transition-colors hover:text-text">
+          Aide
+        </a>
       </nav>
       <button
         type="button"

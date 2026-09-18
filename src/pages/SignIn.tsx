@@ -1,14 +1,12 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, BookOpen, BarChart3, Users } from "lucide-react";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { usePageMeta } from "@/lib/usePageMeta";
 import { AuthCard } from "@/components/auth/AuthCard";
-import { SocialButton } from "@/components/auth/SocialButton";
-import { Divider } from "@/components/auth/Divider";
+import { GoogleAuth } from "@/components/auth/GoogleAuth";
 import { TextInput } from "@/components/auth/TextInput";
 import { PrimaryButton } from "@/components/auth/PrimaryButton";
-import { GoogleIcon } from "@/components/icons/GoogleIcon";
 import { useAuth } from "@/context/AuthContext";
 import { ApiError } from "@/lib/api";
 import type { FeatureData } from "@/components/MarketingHero";
@@ -27,7 +25,7 @@ const heroFeatures: FeatureData[] = [
   {
     icon: Users,
     title: "Une communauté motivante",
-    description: "Des milliers d'élèves comme toi.",
+    description: "Une app pensée pour les élèves.",
   },
 ];
 
@@ -70,9 +68,7 @@ export default function SignIn() {
       heroFeatures={heroFeatures}
     >
       <AuthCard title="Ravi de te revoir !" subtitle="Connecte-toi à ton compte Skoolz.">
-        <SocialButton icon={<GoogleIcon className="h-full w-full" />} label="Continuer avec Google" />
-
-        <Divider />
+        <GoogleAuth onDone={(user) => navigate(user.onboardingCompleted ? "/app" : "/onboarding/level")} />
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <TextInput
@@ -115,14 +111,14 @@ export default function SignIn() {
 
         <p className="text-center text-[14px] leading-[1.6] text-text-secondary">
           En te connectant, tu acceptes nos{" "}
-          <a href="#" className="text-purple underline underline-offset-2">
+          <Link to="/cgu" className="text-purple underline underline-offset-2">
             Conditions d&rsquo;utilisation
-          </a>
+          </Link>
           <br />
           et notre{" "}
-          <a href="#" className="text-purple underline underline-offset-2">
+          <Link to="/confidentialite" className="text-purple underline underline-offset-2">
             Politique de confidentialité
-          </a>
+          </Link>
           .
         </p>
       </AuthCard>

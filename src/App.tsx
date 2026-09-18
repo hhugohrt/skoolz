@@ -5,6 +5,9 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { OnboardingLayout } from "@/layouts/OnboardingLayout";
 import { AppLayout } from "@/layouts/AppLayout";
 import Landing from "@/pages/Landing";
+import Terms from "@/pages/legal/Terms";
+import Privacy from "@/pages/legal/Privacy";
+import LegalNotice from "@/pages/legal/LegalNotice";
 import SignUp from "@/pages/SignUp";
 import SignIn from "@/pages/SignIn";
 import Dashboard from "@/pages/Dashboard";
@@ -29,6 +32,9 @@ export default function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<SignIn />} />
+        <Route path="/cgu" element={<Terms />} />
+        <Route path="/confidentialite" element={<Privacy />} />
+        <Route path="/mentions-legales" element={<LegalNotice />} />
         <Route path="/m/:sessionId" element={<MobileUpload />} />
 
         <Route

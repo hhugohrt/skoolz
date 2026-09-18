@@ -23,7 +23,7 @@ const defaultFeatures: FeatureData[] = [
   {
     icon: Users,
     title: "Rejoins une communauté",
-    description: "Des milliers d'élèves comme toi.",
+    description: "Une app pensée pour les élèves.",
   },
 ];
 
@@ -50,8 +50,8 @@ export function MarketingHero({ heading, subtitle, features = defaultFeatures, m
       <p className="mt-4 max-w-[520px] text-[16px] leading-[1.5] text-text-secondary sm:text-[18px] xl:mt-5 xl:text-[20px]">
         {subtitle ?? (
           <>
-            Rejoins des milliers d&rsquo;élèves qui organisent, révisent
-            <br className="hidden sm:block" /> et progressent chaque jour avec Skoolz.
+            Organise tes cours, révise plus vite
+            <br className="hidden sm:block" /> et progresse chaque jour avec Skoolz.
           </>
         )}
       </p>

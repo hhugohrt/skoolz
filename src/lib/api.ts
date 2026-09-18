@@ -138,7 +138,16 @@ export const api = {
       body: JSON.stringify({ email, password }),
     }),
 
+  googleLogin: (accessToken: string) =>
+    request<{ token: string; user: ApiUser; isNew: boolean }>("/api/auth/google", {
+      method: "POST",
+      body: JSON.stringify({ accessToken }),
+    }),
+
   me: (token: string) => request<{ user: ApiUser }>("/api/me", {}, token),
+
+  deleteAccount: (token: string, confirm: string) =>
+    request<void>("/api/me", { method: "DELETE", body: JSON.stringify({ confirm }) }, token),
 
   listSubjects: (token: string) => request<{ subjects: ApiSubject[] }>("/api/subjects", {}, token),
 

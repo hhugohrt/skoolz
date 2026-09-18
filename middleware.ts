@@ -1,12 +1,13 @@
 import { next } from "@vercel/edge";
 
-// La landing page ("/") est la vitrine publique du site — elle doit rester
+// La landing page ("/") et les pages légales sont la vitrine publique du site — elle doit rester
 // visible sans mot de passe, même si l'inscription/connexion restent protégées
 // tant que le site n'est pas ouvert au public. La page /m/:sessionId (QR code
 // d'import de photos) reste publique pour la même raison que le téléphone n'a
 // jamais l'occasion de s'authentifier. Les fichiers statiques sont exclus pareil.
 function isPublicPath(pathname: string): boolean {
   if (pathname === "/") return true;
+  if (pathname === "/cgu" || pathname === "/confidentialite" || pathname === "/mentions-legales") return true;
   if (pathname.startsWith("/m/")) return true;
   if (/\.[a-zA-Z0-9]+$/.test(pathname)) return true;
   return false;

@@ -1,13 +1,11 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { User, Mail, Lock } from "lucide-react";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { AuthCard } from "@/components/auth/AuthCard";
-import { SocialButton } from "@/components/auth/SocialButton";
-import { Divider } from "@/components/auth/Divider";
+import { GoogleAuth } from "@/components/auth/GoogleAuth";
 import { TextInput } from "@/components/auth/TextInput";
 import { PrimaryButton } from "@/components/auth/PrimaryButton";
-import { GoogleIcon } from "@/components/icons/GoogleIcon";
 import { useAuth } from "@/context/AuthContext";
 import { ApiError } from "@/lib/api";
 import { usePageMeta } from "@/lib/usePageMeta";
@@ -44,9 +42,7 @@ export default function SignUp() {
       mascotSrc="/mascot-signup.webp"
     >
       <AuthCard title="Créer un compte" subtitle="Commence ton aventure avec Skoolz !">
-        <SocialButton icon={<GoogleIcon className="h-full w-full" />} label="Continuer avec Google" />
-
-        <Divider />
+        <GoogleAuth onDone={(user) => navigate(user.onboardingCompleted ? "/app" : "/onboarding/level")} />
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <TextInput
@@ -93,15 +89,15 @@ export default function SignUp() {
 
         <p className="text-center text-[14px] leading-[1.6] text-text-secondary">
           En créant un compte, tu acceptes nos{" "}
-          <a href="#" className="text-purple underline underline-offset-2">
+          <Link to="/cgu" className="text-purple underline underline-offset-2">
             Conditions d&rsquo;utilisation
-          </a>
+          </Link>
           <br />
           et notre{" "}
-          <a href="#" className="text-purple underline underline-offset-2">
+          <Link to="/confidentialite" className="text-purple underline underline-offset-2">
             Politique de confidentialité
-          </a>
-          .
+          </Link>
+          , et tu confirmes avoir 15&nbsp;ans ou plus (ou l&rsquo;accord d&rsquo;un parent).
         </p>
       </AuthCard>
     </AuthLayout>

@@ -148,8 +148,7 @@ function orderedSections(sheet: ApiSheetDetail): ApiSheetSection[] {
   return [...sheet.sections.filter((s) => s.type !== "key_point"), ...sheet.sections.filter((s) => s.type === "key_point")];
 }
 
-const FONTS_URL =
-  "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Caveat:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap";
+const FONTS_URL = "/fonts/fonts.css";
 
 const BASE_CSS = `
   @page { size: A4 var(--orient); margin: 8mm; }
@@ -302,7 +301,6 @@ function documentShell(
 ): string {
   return `<!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><title>${esc(sheet.title)}</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="${FONTS_URL}">
 <style>
   :root { --orient: ${orientation}; ${vars} }
