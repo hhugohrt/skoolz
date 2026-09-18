@@ -19,6 +19,7 @@ import OnboardingSubjects from "@/pages/onboarding/Subjects";
 import OnboardingInstall from "@/pages/onboarding/Install";
 import OnboardingComplete from "@/pages/onboarding/Complete";
 import Courses from "@/pages/app/Courses";
+import SubjectCourses from "@/pages/app/SubjectCourses";
 import SheetDetail from "@/pages/app/SheetDetail";
 import SheetQuiz from "@/pages/app/SheetQuiz";
 import SheetFlashcards from "@/pages/app/SheetFlashcards";
@@ -69,6 +70,7 @@ export default function App() {
         >
           <Route index element={<Dashboard />} />
           <Route path="courses" element={<Courses />} />
+          <Route path="courses/:subjectId" element={<SubjectCourses />} />
           <Route path="sheets" element={<Navigate to="/app/courses" replace />} />
           <Route path="sheets/:id" element={<SheetDetail />} />
           <Route path="sheets/:id/quiz" element={<SheetQuiz />} />

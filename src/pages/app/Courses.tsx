@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronDown, FileText, FolderOpen, Loader2, TriangleAlert } from "lucide-react";
+import { ChevronRight, FolderOpen, Loader2, TriangleAlert } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { api, type ApiCourse, type ApiSheetSummary, type ApiSubject } from "@/lib/api";
 
@@ -10,59 +10,24 @@ interface Folder {
   sheets: ApiSheetSummary[];
 }
 
-function SheetLink({ sheet }: { sheet: ApiSheetSummary }) {
-  return (
-    <Link
-      to={`/app/sheets/${sheet.id}`}
-      className="flex items-center gap-3 rounded-[12px] border border-border/60 bg-white px-4 py-3 transition-colors hover:border-purple/40"
-    >
-      <FileText className="h-4 w-4 shrink-0 text-purple" />
-      <span className="min-w-0 flex-1">
-        <span className="block truncate text-[15px] font-semibold text-text">{sheet.title}</span>
-        <span className="block truncate text-[12px] text-text-secondary">
-          {new Date(sheet.createdAt).toLocaleDateString("fr-FR")}
-        </span>
-      </span>
-    </Link>
-  );
-}
-
-function FolderCard({ folder, defaultOpen }: { folder: Folder; defaultOpen: boolean }) {
-  const [open, setOpen] = useState(defaultOpen);
+function FolderCard({ folder }: { folder: Folder }) {
   const count = folder.sheets.length;
   return (
-    <section className="rounded-[16px] border border-border/60 bg-white/70">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        className="flex w-full items-center gap-3 px-4 py-3.5 text-left sm:px-5"
-      >
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-purple/10 text-purple">
-          <FolderOpen className="h-[18px] w-[18px]" />
+    <Link
+      to={`/app/courses/${folder.key}`}
+      className="flex items-center gap-3 rounded-[16px] border border-border/60 bg-white/70 px-4 py-4 transition-colors hover:border-purple/40 sm:px-5"
+    >
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-purple/10 text-purple">
+        <FolderOpen className="h-5 w-5" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-[16px] font-semibold text-text">{folder.name}</span>
+        <span className="block text-[13px] text-text-secondary">
+          {count === 0 ? "Aucune fiche" : `${count} fiche${count > 1 ? "s" : ""}`}
         </span>
-        <span className="min-w-0 flex-1 truncate text-[16px] font-semibold text-text">{folder.name}</span>
-        <span className="shrink-0 text-[13px] text-text-secondary">
-          {count === 0 ? "Vide" : `${count} fiche${count > 1 ? "s" : ""}`}
-        </span>
-        <ChevronDown className={`h-4 w-4 shrink-0 text-text-secondary transition-transform ${open ? "rotate-180" : ""}`} />
-      </button>
-      {open && (
-        <div className="px-4 pb-4 sm:px-5">
-          {count === 0 ? (
-            <p className="text-[14px] text-text-secondary">
-              Aucune fiche rangée ici pour l&rsquo;instant.
-            </p>
-          ) : (
-            <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-              {folder.sheets.map((sheet) => (
-                <SheetLink key={sheet.id} sheet={sheet} />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-    </section>
+      </span>
+      <ChevronRight className="h-5 w-5 shrink-0 text-text-secondary" />
+    </Link>
   );
 }
 
@@ -129,18 +94,16 @@ export default function Courses() {
       <h1 className="font-display text-[26px] font-bold text-text sm:text-[30px]">Tes cours</h1>
       <p className="mt-1 text-[14px] text-text-secondary">Toutes tes fiches, rangées par matière.</p>
 
-      <div className="mt-6 flex flex-col gap-3">
+      <div className="mt-6">
         {subjects === null ? (
           <p className="text-[15px] text-text-secondary">Chargement…</p>
         ) : (
-          <>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {folders.map((folder) => (
-              <FolderCard key={folder.key} folder={folder} defaultOpen={folder.sheets.length > 0} />
+              <FolderCard key={folder.key} folder={folder} />
             ))}
-            {unfiled.length > 0 && (
-              <FolderCard folder={{ key: "unfiled", name: "Non rangées", sheets: unfiled }} defaultOpen />
-            )}
-          </>
+            {unfiled.length > 0 && <FolderCard folder={{ key: "unfiled", name: "Non rangées", sheets: unfiled }} />}
+          </div>
         )}
       </div>
 

@@ -59,8 +59,8 @@ export default function SheetDetail() {
 
   return (
     <div>
-      <Link to="/app/courses" className="text-[14px] font-semibold text-purple hover:underline">
-        ← Mes cours
+      <Link to={sheet.subjectId ? `/app/courses/${sheet.subjectId}` : "/app/courses"} className="text-[14px] font-semibold text-purple hover:underline">
+        ← {sheet.subjectName ?? "Mes cours"}
       </Link>
 
       <div className="mt-4 flex items-center gap-2 text-[14px] text-text-secondary">
