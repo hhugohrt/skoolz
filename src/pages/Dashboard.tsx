@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { FileUp, Sparkles, FileCheck2, FolderCheck } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { CourseDropzone } from "@/components/courses/CourseDropzone";
 import { QrCourseImportButton } from "@/components/courses/QrCourseImport";
+import { FormatToggle } from "@/components/courses/FormatToggle";
+import type { SheetFormat } from "@/lib/api";
 
 const STEPS = [
   {
@@ -28,6 +31,7 @@ const STEPS = [
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const [format, setFormat] = useState<SheetFormat>("text");
 
   return (
     <div>
@@ -44,11 +48,15 @@ export default function Dashboard() {
         </p>
 
         <div className="mt-6">
-          <CourseDropzone />
+          <FormatToggle value={format} onChange={setFormat} />
+        </div>
+
+        <div className="mt-4">
+          <CourseDropzone format={format} />
         </div>
 
         <div className="mt-4 flex justify-center">
-          <QrCourseImportButton />
+          <QrCourseImportButton format={format} />
         </div>
       </div>
 
