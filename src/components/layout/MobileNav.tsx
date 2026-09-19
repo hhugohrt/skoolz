@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, BookOpen, GraduationCap, User, Settings, LogOut, Menu, X } from "lucide-react";
+import { Home, BookOpen, GraduationCap, User, Settings, LogOut, Menu, X, Sparkles } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/context/AuthContext";
+import { PricingModal } from "@/components/billing/PricingModal";
 
 const NAV_ITEMS = [
   { to: "/app", label: "Accueil", icon: Home, end: true },
@@ -15,6 +16,7 @@ const NAV_ITEMS = [
 // Mobile / tablette : barre du haut avec le menu « burger » qui ouvre un panneau latéral.
 export function MobileNav() {
   const [open, setOpen] = useState(false);
+  const [plansOpen, setPlansOpen] = useState(false);
   const { pathname } = useLocation();
   const { user, logout } = useAuth();
 
@@ -96,6 +98,19 @@ export function MobileNav() {
 
           <button
             type="button"
+            onClick={() => {
+              setOpen(false);
+              setPlansOpen(true);
+            }}
+            tabIndex={open ? 0 : -1}
+            className="mt-1 flex min-h-[52px] items-center gap-3 rounded-[14px] px-4 text-[16px] font-semibold text-purple transition-colors hover:bg-purple/10"
+          >
+            <Sparkles className="h-5 w-5" strokeWidth={2} />
+            Plans
+          </button>
+
+          <button
+            type="button"
             onClick={logout}
             tabIndex={open ? 0 : -1}
             className="mt-auto flex min-h-[52px] items-center gap-3 rounded-[14px] px-4 text-[16px] font-semibold text-text-secondary transition-colors hover:bg-surface-2"
@@ -105,6 +120,7 @@ export function MobileNav() {
           </button>
         </nav>
       </div>
+      {plansOpen && <PricingModal onClose={() => setPlansOpen(false)} />}
     </>
   );
 }

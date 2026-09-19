@@ -72,9 +72,21 @@ export function PricingModal({ onClose }: { onClose: () => void }) {
           <X className="h-5 w-5" />
         </button>
 
+        {user?.isPremium ? (
+          <>
+            <h2 className="pr-8 font-display text-[24px] font-bold text-text">Tu es abonné 🎉</h2>
+            <p className="mt-2 text-[14px] text-text-secondary">
+              Toutes tes fiches sont débloquées. Merci de faire confiance à Skoolz !
+            </p>
+            <div className="mt-5">
+              <PlanPicker value={plan} onChange={setPlan} />
+            </div>
+          </>
+        ) : (
+          <>
         <h2 className="pr-8 font-display text-[24px] font-bold text-text">Débloque tes fiches</h2>
         <p className="mt-1 text-[14px] text-text-secondary">
-          {user ? `${user.firstName}, ` : ""}ta fiche est prête. Abonne-toi pour la lire, l&rsquo;imprimer et la modifier.
+          {user ? `${user.firstName}, ` : ""}abonne-toi pour lire, imprimer et modifier toutes tes fiches.
         </p>
 
         <div className="mt-5">
@@ -133,6 +145,8 @@ export function PricingModal({ onClose }: { onClose: () => void }) {
           </button>
         )}
         {error && <p className="mt-3 text-[13px] text-red-500">{error}</p>}
+          </>
+        )}
       </div>
     </div>
   );
