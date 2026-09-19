@@ -4,7 +4,7 @@
 // depuis le téléphone, désignerait le téléphone lui-même).
 const API_URL = import.meta.env.VITE_API_URL ?? `http://${window.location.hostname}:4010`;
 
-export type Level = "3e" | "seconde" | "premiere" | "terminale" | "superieur";
+export type Level = "6e" | "5e" | "4e" | "3e" | "seconde" | "premiere" | "terminale" | "superieur";
 export type Theme = "light" | "dark" | "auto";
 export type CourseStatus = "uploaded" | "processing" | "completed" | "failed";
 

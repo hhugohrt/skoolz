@@ -5,6 +5,9 @@ import { useOnboarding } from "@/context/OnboardingContext";
 import type { Level } from "@/lib/api";
 
 const LEVELS: { value: Level; title: string; description: string }[] = [
+  { value: "6e", title: "6e", description: "Entrée au collège" },
+  { value: "5e", title: "5e", description: "Consolider les bases" },
+  { value: "4e", title: "4e", description: "Approfondir" },
   { value: "3e", title: "3e", description: "Brevet" },
   { value: "seconde", title: "Seconde", description: "Construire de bonnes bases" },
   { value: "premiere", title: "Première", description: "Bac français, maths et spécialités" },

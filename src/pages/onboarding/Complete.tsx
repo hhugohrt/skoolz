@@ -7,6 +7,9 @@ import { useAuth } from "@/context/AuthContext";
 import { api, ApiError, type ApiSubject } from "@/lib/api";
 
 const LEVEL_LABELS: Record<string, string> = {
+  "6e": "6e",
+  "5e": "5e",
+  "4e": "4e",
   "3e": "3e",
   seconde: "Seconde",
   premiere: "Première",
