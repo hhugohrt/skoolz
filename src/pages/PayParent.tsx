@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { PlanPicker } from "@/components/billing/PlanPicker";
+import { CheckoutEmbed } from "@/components/billing/CheckoutEmbed";
 import { api, ApiError } from "@/lib/api";
 import type { Plan } from "@/lib/pricing";
 import { usePageMeta } from "@/lib/usePageMeta";
@@ -17,6 +18,7 @@ export default function PayParent() {
   const [plan, setPlan] = useState<Plan["id"]>("yearly");
   const [alreadyPremium, setAlreadyPremium] = useState(false);
   const [paying, setPaying] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const [payError, setPayError] = useState<string | null>(null);
   const paid = useSearchParams()[0].get("paid") === "1";
 
@@ -34,10 +36,11 @@ export default function PayParent() {
     setPaying(true);
     setPayError(null);
     try {
-      const { url } = await api.createParentCheckout(token ?? "", plan);
-      window.location.href = url;
+      const { sessionId } = await api.createParentCheckout(token ?? "", plan);
+      setSessionId(sessionId);
     } catch (err) {
       setPayError(err instanceof ApiError ? err.message : "Impossible de démarrer le paiement pour le moment.");
+    } finally {
       setPaying(false);
     }
   }
@@ -75,6 +78,23 @@ export default function PayParent() {
                   Pour les débloquer, {firstName} a besoin d&rsquo;un abonnement.
                 </p>
 
+                {sessionId ? (
+                  <div className="mt-6">
+                    <CheckoutEmbed
+                      sessionId={sessionId}
+                      returnUrl={`${window.location.origin}/pay/${token}?paid=1`}
+                      onComplete={() => window.location.assign(`/pay/${token}?paid=1`)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setSessionId(null)}
+                      className="mt-4 w-full text-center text-[14px] font-semibold text-text-secondary hover:text-text"
+                    >
+                      ← Changer de formule
+                    </button>
+                  </div>
+                ) : (
+                  <>
                 <div className="mt-6">
                   <PlanPicker value={plan} onChange={setPlan} />
                 </div>
@@ -89,6 +109,8 @@ export default function PayParent() {
                   Payer l&rsquo;abonnement
                 </button>
                 {payError && <p className="mt-3 text-center text-[13px] text-red-500">{payError}</p>}
+                  </>
+                )}
               </>
               )
             )}

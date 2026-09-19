@@ -185,10 +185,10 @@ export const api = {
     request<{ url: string }>("/api/billing/parent-link", { method: "POST" }, token),
 
   createCheckout: (token: string, plan: "monthly" | "yearly") =>
-    request<{ url: string }>("/api/billing/checkout", { method: "POST", body: JSON.stringify({ plan }) }, token),
+    request<{ url: string; sessionId: string }>("/api/billing/checkout", { method: "POST", body: JSON.stringify({ plan }) }, token),
 
   createParentCheckout: (parentToken: string, plan: "monthly" | "yearly") =>
-    request<{ url: string }>(`/api/billing/parent/${encodeURIComponent(parentToken)}/checkout`, {
+    request<{ url: string; sessionId: string }>(`/api/billing/parent/${encodeURIComponent(parentToken)}/checkout`, {
       method: "POST",
       body: JSON.stringify({ plan }),
     }),

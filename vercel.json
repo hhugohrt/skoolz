@@ -23,7 +23,7 @@
         },
         {
           "key": "Permissions-Policy",
-          "value": "geolocation=(), microphone=(), payment=()"
+          "value": "geolocation=(), microphone=(), payment=*"
         }
       ]
     },

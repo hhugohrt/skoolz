@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Check, Copy, Loader2, Share2, Users, X } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { api, ApiError } from "@/lib/api";
@@ -8,8 +9,8 @@ import { PlanPicker } from "@/components/billing/PlanPicker";
 // Fenêtre « Débloquer » : offres + bouton S'abonner, ou lien à envoyer à un parent qui paiera.
 export function PricingModal({ onClose }: { onClose: () => void }) {
   const { token, user } = useAuth();
+  const navigate = useNavigate();
   const [plan, setPlan] = useState<Plan["id"]>("yearly");
-  const [subscribing, setSubscribing] = useState(false);
   const [link, setLink] = useState<string | null>(null);
   const [loadingLink, setLoadingLink] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -26,16 +27,9 @@ export function PricingModal({ onClose }: { onClose: () => void }) {
     };
   }, [onClose]);
 
-  async function subscribe() {
-    setSubscribing(true);
-    setError(null);
-    try {
-      const { url } = await api.createCheckout(token!, plan);
-      window.location.href = url;
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Impossible de démarrer le paiement pour le moment.");
-      setSubscribing(false);
-    }
+  function subscribe() {
+    onClose();
+    navigate(`/app/checkout?plan=${plan}`);
   }
 
   async function askParent() {
@@ -113,10 +107,8 @@ export function PricingModal({ onClose }: { onClose: () => void }) {
         <button
           type="button"
           onClick={subscribe}
-          disabled={subscribing}
-          className="mt-6 flex h-[54px] w-full items-center justify-center gap-2 rounded-[16px] bg-purple text-[16px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-70"
+          className="mt-6 flex h-[54px] w-full items-center justify-center gap-2 rounded-[16px] bg-purple text-[16px] font-semibold text-white transition-opacity hover:opacity-90"
         >
-          {subscribing && <Loader2 className="h-4 w-4 animate-spin" />}
           S&rsquo;abonner
         </button>
 
