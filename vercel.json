@@ -1,6 +1,33 @@
 {
-  "cleanUrls": true,
   "rewrites": [
+    {
+      "source": "/fiches-de-revision",
+      "destination": "/fiches-de-revision.html"
+    },
+    {
+      "source": "/generateur-fiche-de-revision-ia",
+      "destination": "/generateur-fiche-de-revision-ia.html"
+    },
+    {
+      "source": "/comment-faire-une-fiche-de-revision",
+      "destination": "/comment-faire-une-fiche-de-revision.html"
+    },
+    {
+      "source": "/carte-mentale-revision",
+      "destination": "/carte-mentale-revision.html"
+    },
+    {
+      "source": "/fiche-de-revision-bac",
+      "destination": "/fiche-de-revision-bac.html"
+    },
+    {
+      "source": "/fiche-de-revision-brevet",
+      "destination": "/fiche-de-revision-brevet.html"
+    },
+    {
+      "source": "/reviser-efficacement",
+      "destination": "/reviser-efficacement.html"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
