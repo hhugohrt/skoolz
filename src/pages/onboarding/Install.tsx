@@ -1,12 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import { EllipsisVertical, Plus, Share, SquareArrowUp } from "lucide-react";
+import { ChevronsDown, Ellipsis, EllipsisVertical, Plus, Share, SquarePlus, SquareArrowUp } from "lucide-react";
 import { PrimaryButton } from "@/components/auth/PrimaryButton";
 import { isIos } from "@/lib/device";
 
 const IOS_STEPS = [
-  { icon: Share, title: "Touche « Partager »", text: "L'icône carré + flèche, en bas de Safari." },
-  { icon: Plus, title: "« Sur l'écran d'accueil »", text: "Fais défiler la liste et choisis cette option." },
-  { icon: SquareArrowUp, title: "Touche « Ajouter »", text: "Skoolz apparaît sur ton écran comme une vraie app." },
+  { icon: Ellipsis, title: "Touche les 3 petits points", text: "Le bouton ⋯ en bas à droite de Safari." },
+  { icon: Share, title: "Touche « Partager »", text: "Dans le menu qui s'ouvre." },
+  { icon: ChevronsDown, title: "Fais défiler vers le bas", text: "Descends dans la liste des options." },
+  { icon: SquarePlus, title: "« Sur l'écran d'accueil »", text: "Puis touche « Ajouter » : Skoolz apparaît comme une vraie app." },
 ];
 
 const ANDROID_STEPS = [
