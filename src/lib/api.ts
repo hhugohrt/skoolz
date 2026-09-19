@@ -17,6 +17,7 @@ export interface ApiUser {
   onboardingCompleted: boolean;
   emailVerified: boolean;
   isPremium: boolean;
+  isAdmin: boolean;
   createdAt: string;
 }
 
@@ -84,6 +85,63 @@ export interface SheetUpdate {
   title: string;
   summary: string;
   sections: { type: string; title: string | null; content: string }[];
+}
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  firstName: string;
+  level: string | null;
+  plan: string;
+  isPremium: boolean;
+  isAdmin: boolean;
+  emailVerified: boolean;
+  onboardingCompleted: boolean;
+  google: boolean;
+  whopMembershipId: string | null;
+  createdAt: string;
+  courses: number;
+  sheets: number;
+  gens24h: number;
+}
+
+export interface AdminOverview {
+  users: number;
+  new24h: number;
+  new7d: number;
+  verified: number;
+  onboarded: number;
+  premium: number;
+  courses: number;
+  failed: number;
+  sheets: number;
+  gens24h: number;
+  gens7d: number;
+  series: { day: string; signups: number; generations: number }[];
+}
+
+export interface AdminCourse {
+  id: string;
+  title: string;
+  status: CourseStatus;
+  errorMessage: string | null;
+  createdAt: string;
+  userEmail: string;
+  subjectName: string | null;
+  sheetId: string | null;
+}
+
+export interface AdminSubject {
+  id: string;
+  name: string;
+  isCustom: boolean;
+  courses: number;
+  users: number;
+}
+
+export interface AdminSystem {
+  services: { name: string; ok: boolean; detail: string }[];
+  limits: { premiumDaily: number; freeDaily: number };
 }
 
 export class ApiError extends Error {
@@ -195,6 +253,45 @@ export const api = {
 
   getParentInvite: (parentToken: string) =>
     request<{ firstName: string; alreadyPremium: boolean }>(`/api/billing/parent/${encodeURIComponent(parentToken)}`),
+
+  adminOverview: (token: string) => request<AdminOverview>("/api/admin/overview", {}, token),
+
+  adminUsers: (token: string, params: { q?: string; filter?: string; offset?: number }) => {
+    const query = new URLSearchParams();
+    if (params.q) query.set("q", params.q);
+    if (params.filter) query.set("filter", params.filter);
+    if (params.offset) query.set("offset", String(params.offset));
+    return request<{ total: number; users: AdminUser[] }>(`/api/admin/users?${query}`, {}, token);
+  },
+
+  adminUser: (token: string, id: string) =>
+    request<{
+      user: AdminUser;
+      courses: { id: string; title: string; status: string; errorMessage: string | null; createdAt: string }[];
+      sheets: { id: string; title: string; createdAt: string }[];
+    }>(`/api/admin/users/${id}`, {}, token),
+
+  adminUpdateUser: (token: string, id: string, patch: { plan?: "free" | "premium"; emailVerified?: boolean; firstName?: string }) =>
+    request<{ user: AdminUser }>(`/api/admin/users/${id}`, { method: "PATCH", body: JSON.stringify(patch) }, token),
+
+  adminDeleteUser: (token: string, id: string) => request<void>(`/api/admin/users/${id}`, { method: "DELETE" }, token),
+
+  adminCourses: (token: string, status?: string) =>
+    request<{ courses: AdminCourse[] }>(`/api/admin/courses${status ? `?status=${status}` : ""}`, {}, token),
+
+  adminDeleteCourse: (token: string, id: string) => request<void>(`/api/admin/courses/${id}`, { method: "DELETE" }, token),
+
+  adminSubjects: (token: string) => request<{ subjects: AdminSubject[] }>("/api/admin/subjects", {}, token),
+
+  adminCreateSubject: (token: string, name: string) =>
+    request<{ subject: AdminSubject }>("/api/admin/subjects", { method: "POST", body: JSON.stringify({ name }) }, token),
+
+  adminRenameSubject: (token: string, id: string, name: string) =>
+    request<{ ok: true }>(`/api/admin/subjects/${id}`, { method: "PATCH", body: JSON.stringify({ name }) }, token),
+
+  adminDeleteSubject: (token: string, id: string) => request<void>(`/api/admin/subjects/${id}`, { method: "DELETE" }, token),
+
+  adminSystem: (token: string) => request<AdminSystem>("/api/admin/system", {}, token),
 
   updateProfile: (token: string, payload: { firstName?: string; level?: Level; subjectIds?: string[] }) =>
     request<{ user: ApiUser }>("/api/me", { method: "PATCH", body: JSON.stringify(payload) }, token),

@@ -25,6 +25,7 @@ import OnboardingComplete from "@/pages/onboarding/Complete";
 import Courses from "@/pages/app/Courses";
 import PayParent from "@/pages/PayParent";
 import Checkout from "@/pages/app/Checkout";
+import Admin from "@/pages/app/Admin";
 import SubjectCourses from "@/pages/app/SubjectCourses";
 import SheetDetail from "@/pages/app/SheetDetail";
 import SheetQuiz from "@/pages/app/SheetQuiz";
@@ -94,6 +95,7 @@ export default function App() {
         >
           <Route index element={<Dashboard />} />
           <Route path="checkout" element={<Checkout />} />
+          <Route path="admin" element={<Admin />} />
           <Route path="courses" element={<Courses />} />
           <Route path="courses/:subjectId" element={<SubjectCourses />} />
           <Route path="sheets" element={<Navigate to="/app/courses" replace />} />

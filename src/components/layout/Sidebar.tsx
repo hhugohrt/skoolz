@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { Home, BookOpen, GraduationCap, User, Settings, Sparkles } from "lucide-react";
+import { Home, BookOpen, GraduationCap, User, Settings, Sparkles, Shield } from "lucide-react";
 
 const NAV_ITEMS = [
   { to: "/app", label: "Accueil", icon: Home, end: true },
@@ -10,9 +10,11 @@ const NAV_ITEMS = [
 ];
 
 import { PricingModal } from "@/components/billing/PricingModal";
+import { useAuth } from "@/context/AuthContext";
 
 export function Sidebar() {
   const [plansOpen, setPlansOpen] = useState(false);
+  const { user } = useAuth();
   return (
     <>
     <nav className="fixed left-4 top-1/2 z-20 hidden -translate-y-1/2 flex-col items-center gap-1 rounded-[28px] border border-white/60 bg-white/80 p-3 shadow-[0_18px_50px_rgba(54,44,120,0.12)] backdrop-blur-md lg:flex">
@@ -35,6 +37,20 @@ export function Sidebar() {
       </div>
 
       <div className="my-1 h-px w-8 bg-border" />
+
+      {user?.isAdmin && (
+        <NavLink
+          to="/app/admin"
+          title="Administration"
+          className={({ isActive }) =>
+            `flex h-11 w-11 items-center justify-center rounded-full transition-colors ${
+              isActive ? "bg-purple/10 text-purple" : "text-text-secondary hover:bg-surface-2 hover:text-text"
+            }`
+          }
+        >
+          <Shield className="h-5 w-5" strokeWidth={2} />
+        </NavLink>
+      )}
 
       <button
         type="button"

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, BookOpen, GraduationCap, User, Settings, LogOut, Menu, X, Sparkles } from "lucide-react";
+import { Home, BookOpen, GraduationCap, User, Settings, LogOut, Menu, X, Sparkles, Shield } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/context/AuthContext";
 import { PricingModal } from "@/components/billing/PricingModal";
@@ -94,6 +94,22 @@ export function MobileNav() {
                 </NavLink>
               </li>
             ))}
+            {user?.isAdmin && (
+              <li>
+                <NavLink
+                  to="/app/admin"
+                  tabIndex={open ? 0 : -1}
+                  className={({ isActive }) =>
+                    `flex min-h-[52px] items-center gap-3 rounded-[14px] px-4 text-[16px] font-semibold transition-colors ${
+                      isActive ? "bg-purple/10 text-purple" : "text-text hover:bg-surface-2"
+                    }`
+                  }
+                >
+                  <Shield className="h-5 w-5" strokeWidth={2} />
+                  Administration
+                </NavLink>
+              </li>
+            )}
           </ul>
 
           <button
