@@ -96,29 +96,39 @@ export function SubjectPrompt({ sheet, suggestion, onSheetChange }: SubjectPromp
         )}
 
         {choosing && (
-          <>
-            <select
-              value={selectedId}
-              onChange={(e) => setSelectedId(e.target.value)}
-              aria-label="Matière"
-              className="rounded-full border border-border bg-white px-4 py-2 text-[14px] font-semibold text-text outline-none focus:border-purple"
-            >
-              {subjects.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
+          <div className="w-full">
+            <div role="radiogroup" aria-label="Matière" className="flex flex-wrap gap-2">
+              {subjects.map((s) => {
+                const active = s.id === selectedId;
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={active}
+                    disabled={busy}
+                    onClick={() => setSelectedId(s.id)}
+                    className={`rounded-full border px-4 py-2 text-[14px] font-semibold transition-colors disabled:opacity-60 ${
+                      active
+                        ? "border-purple bg-purple text-white"
+                        : "border-border bg-white text-text hover:border-purple/40"
+                    }`}
+                  >
+                    {s.name}
+                  </button>
+                );
+              })}
+            </div>
             <button
               type="button"
               disabled={busy || !selectedId}
               onClick={() => assign(selectedId)}
-              className="bg-cta-gradient flex items-center gap-1.5 rounded-full px-4 py-2 text-[14px] font-semibold text-white disabled:opacity-60"
+              className="bg-cta-gradient mt-3 flex items-center gap-1.5 rounded-full px-5 py-2.5 text-[14px] font-semibold text-white disabled:opacity-60"
             >
               {busy && <Loader2 className="h-4 w-4 animate-spin" />}
-              Ranger ici
+              Ranger dans {subjects.find((s) => s.id === selectedId)?.name ?? "cette matière"}
             </button>
-          </>
+          </div>
         )}
 
         <button
