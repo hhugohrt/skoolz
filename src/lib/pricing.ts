@@ -15,7 +15,7 @@ export const PLANS: Plan[] = [
 
 export const PREMIUM_FEATURES = [
   "Toutes tes fiches débloquées, sans limite de lecture",
-  "Fiche colorée, compactée, carte mentale et schéma, prêtes à imprimer en A4",
+  "Fiche colorée, compactée et schéma, prêtes à imprimer en A4",
   "Modification de tes fiches, quiz et flashcards",
   "Génération de nouvelles fiches chaque jour",
   "Paiement sécurisé, résiliable à tout moment",

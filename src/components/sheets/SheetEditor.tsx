@@ -21,7 +21,7 @@ const fieldClass =
   "w-full rounded-[10px] border border-border bg-white px-3 py-2 text-[15px] text-text outline-none transition-colors focus:border-purple";
 
 // Édition manuelle de la fiche : titre, résumé, et chaque section (type, titre, contenu, ordre).
-// Les rendus A4 (colorée, compacte, carte mentale, schéma) se recalculent à partir de ces données.
+// Les rendus A4 (colorée, compacte, schéma) se recalculent à partir de ces données.
 export function SheetEditor({ sheet, onSaved, onCancel }: SheetEditorProps) {
   const { token } = useAuth();
   const [title, setTitle] = useState(sheet.title);

@@ -51,6 +51,9 @@ export interface ApiSheetSummary {
   chapter: string | null;
   // Compte gratuit : le contenu est masqué côté serveur.
   locked: boolean;
+  // Un long cours donne plusieurs fiches : rang (1..n) et nombre total.
+  part: number;
+  partCount: number;
   createdAt: string;
 }
 
@@ -63,6 +66,7 @@ export interface ApiSheetSection {
 
 export interface ApiSheetDetail extends ApiSheetSummary {
   sections: ApiSheetSection[];
+  siblings: { id: string; title: string; part: number }[];
 }
 
 
@@ -326,7 +330,7 @@ export const api = {
     request<void>(`/api/courses/${id}`, { method: "DELETE" }, token),
 
   generateSheet: (token: string, courseId: string) =>
-    request<{ sheetId: string; suggestedSubject: ApiSubjectSuggestion | null }>(
+    request<{ sheetId: string; sheetIds: string[]; suggestedSubject: ApiSubjectSuggestion | null }>(
       `/api/courses/${courseId}/generate`,
       { method: "POST" },
       token,

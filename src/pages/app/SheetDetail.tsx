@@ -64,6 +64,35 @@ export default function SheetDetail() {
         ← {sheet.subjectName ?? "Mes cours"}
       </Link>
 
+      {sheet.partCount > 1 && (
+        <div className="mt-4 rounded-[14px] border border-purple/25 bg-purple/[0.05] p-3.5">
+          {navState.justGenerated && (
+            <p className="text-[14px] font-semibold text-text">
+              Ton cours est long : on l&rsquo;a découpé en {sheet.partCount} fiches pour que rien ne manque.
+            </p>
+          )}
+          <nav aria-label="Fiches de ce cours" className={`flex flex-wrap items-center gap-2 ${navState.justGenerated ? "mt-2.5" : ""}`}>
+            <span className="text-[13px] font-semibold text-text-secondary">Fiches de ce cours :</span>
+            {sheet.siblings.map((item) => {
+              const current = item.id === sheet.id;
+              return (
+                <Link
+                  key={item.id}
+                  to={`/app/sheets/${item.id}`}
+                  aria-current={current ? "page" : undefined}
+                  title={item.title}
+                  className={`rounded-full border px-3.5 py-1.5 text-[13px] font-semibold transition-colors ${
+                    current ? "border-purple bg-purple text-white" : "border-border bg-white text-text hover:border-purple/40"
+                  }`}
+                >
+                  {item.part}/{sheet.partCount}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+      )}
+
       <div className="mt-4 flex items-center gap-2 text-[14px] text-text-secondary">
         {sheet.subjectName && <span className="font-semibold text-purple">{sheet.subjectName}</span>}
         {sheet.chapter && <span>· {sheet.chapter}</span>}

@@ -254,29 +254,6 @@ const DIAGRAM_CSS = `
   .box.key h2::after { content: "♥"; margin-left: auto; }
 `;
 
-const MINDMAP_CSS = `
-  .map { position: relative; display: flex; align-items: stretch; gap: 6mm; }
-  .col { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-around; gap: 2mm; }
-  .item { position: relative; z-index: 1; display: flex; align-items: center; gap: 3mm; }
-  .node { flex: none; width: var(--node-w); padding: 1.8mm 2.4mm; border-radius: 3mm; background: var(--ac); color: #fff; text-align: center;
-    font-family: "Barlow Condensed","Arial Narrow",sans-serif; font-size: 1.28em; font-weight: 700; line-height: 1.08; text-transform: uppercase; }
-  .leaves { flex: 1; min-width: 0; margin: 0; padding: 0; list-style: none; font-size: .86em; line-height: 1.26; }
-  .leaves li { position: relative; margin-bottom: .6mm; }
-  .col.left .leaves { text-align: right; }
-  .col.left .leaves li { padding-right: 3.6mm; }
-  .col.right .leaves li { padding-left: 3.6mm; }
-  .leaves li::before { content: ""; position: absolute; top: .5em; width: 1.6mm; height: 1.6mm; border-radius: 50%; background: var(--ac); }
-  .col.left .leaves li::before { right: 0; }
-  .col.right .leaves li::before { left: 0; }
-  .leaves li.more { opacity: .6; font-style: italic; }
-  .center { flex: none; width: var(--core-w); display: flex; align-items: center; justify-content: center; }
-  .core { position: relative; z-index: 2; padding: 5mm 4mm; border-radius: 46% 54% 50% 50% / 52% 48% 52% 48%; text-align: center;
-    background: linear-gradient(135deg, #4f8cff, #6d4aff 55%, #a855f7); color: #fff; box-shadow: 0 1.4mm 3mm rgba(109,74,255,.35); }
-  .core h1 { margin: 0; font-family: "Caveat","Segoe Print",cursive; font-size: 2.3em; font-weight: 700; line-height: 1; }
-  .core .meta { margin-top: 1.4mm; font-family: "Caveat","Segoe Print",cursive; font-size: 1.25em; font-weight: 700; opacity: .92; }
-  svg.links { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: visible; }
-`;
-
 function banner(sheet: ApiSheetDetail): string {
   const meta = [sheet.subjectName, sheet.chapter].filter(Boolean).join(" – ");
   return `<header>
@@ -387,65 +364,7 @@ function diagram(sheet: ApiSheetDetail, orientation: Orientation): string {
   );
 }
 
-// --- Carte mentale : titre au centre, une branche par section, points en feuilles ------------------
-
-const shorten = (text: string, max: number) => (text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text);
-
-function leafText(line: string): string {
-  const plain = line.replace(/^[-•*]\s+/, "").replace(/^\d{1,2}[.)]\s+/, "");
-  return shorten(plain, 78);
-}
-
-function mindmap(sheet: ApiSheetDetail, orientation: Orientation): string {
-  const sections = orderedSections(sheet);
-  const mapH = USABLE_H[orientation] - 46;
-  const perSide = Math.ceil(sections.length / 2);
-  const fontPx = orientation === "landscape" ? 13.2 : 12.4;
-  const budget = mapH / Math.max(1, perSide);
-  const maxLeaves = Math.max(1, Math.min(7, Math.floor((budget - 40) / (fontPx * 1.36 * 0.86))));
-
-  let n = 0;
-  const side = { left: [] as string[], right: [] as string[] };
-  sections.forEach((section, i) => {
-    const key = section.type === "key_point";
-    if (!key) n += 1;
-    const hue = key ? KEY_HUE : HUES[(n - 1) % HUES.length];
-    const lines = cleanLines(section);
-    const shown = lines.length > maxLeaves ? lines.slice(0, maxLeaves - 1) : lines;
-    const hidden = lines.length - shown.length;
-    const leaves = [
-      ...shown.map((l) => `<li>${soft(leafText(l))}</li>`),
-      ...(hidden > 0 ? [`<li class="more">+ ${hidden} autre${hidden > 1 ? "s" : ""} point${hidden > 1 ? "s" : ""}</li>`] : []),
-    ].join("");
-    const title = esc(shorten(section.title ?? (key ? "À retenir" : "Notion"), 42));
-    const isRight = i % 2 === 0;
-    const node = `<div class="node" data-side="${isRight ? "right" : "left"}">${title}</div>`;
-    const list = `<ul class="leaves">${leaves}</ul>`;
-    const item = `<div class="item" style="${hueStyle(hue)}">${isRight ? node + list : list + node}</div>`;
-    (isRight ? side.right : side.left).push(item);
-  });
-
-  const meta = [sheet.subjectName, sheet.chapter].filter(Boolean).join(" – ");
-  const nodeW = orientation === "landscape" ? "36mm" : "27mm";
-  const coreW = orientation === "landscape" ? "58mm" : "40mm";
-
-  return documentShell(
-    sheet,
-    orientation,
-    "mindmap",
-    MINDMAP_CSS,
-    `--node-w:${nodeW};--core-w:${coreW};`,
-    `<main class="map" style="height:${mapH}px;font-size:${fontPx}px">
-  <div class="col left">${side.left.join("")}</div>
-  <div class="center"><div class="core"><h1>${esc(sheet.title)}</h1>${meta ? `<div class="meta">${esc(meta)}</div>` : ""}</div></div>
-  <div class="col right">${side.right.join("")}</div>
-</main>
-${footer(sheet)}`,
-  );
-}
-
 export function buildSheetHtml(sheet: ApiSheetDetail, orientation: Orientation, style: SheetStyle = "colorful"): string {
-  if (style === "mindmap") return mindmap(sheet, orientation);
   if (style === "diagram") return diagram(sheet, orientation);
   return blocks(sheet, style, orientation);
 }
@@ -488,41 +407,6 @@ export function fitSheetToPage(doc: Document, orientation: Orientation, maxGrow 
   }
 }
 
-// Trace les liens courbes entre le noyau central et chaque branche (positions mesurées dans le DOM).
-export function drawMindmapLinks(doc: Document): void {
-  const map = doc.querySelector<HTMLElement>(".map");
-  const core = doc.querySelector<HTMLElement>(".core");
-  if (!map || !core) return;
-
-  map.querySelector("svg.links")?.remove();
-  const ns = "http://www.w3.org/2000/svg";
-  const svg = doc.createElementNS(ns, "svg");
-  svg.setAttribute("class", "links");
-
-  const m = map.getBoundingClientRect();
-  const c = core.getBoundingClientRect();
-  const cy = c.top - m.top + c.height / 2;
-
-  map.querySelectorAll<HTMLElement>(".node").forEach((node) => {
-    const r = node.getBoundingClientRect();
-    const toRight = node.dataset.side === "right";
-    const x1 = (toRight ? c.right : c.left) - m.left;
-    const x2 = (toRight ? r.left : r.right) - m.left;
-    const y2 = r.top - m.top + r.height / 2;
-    const mid = x1 + (x2 - x1) / 2;
-    const path = doc.createElementNS(ns, "path");
-    path.setAttribute("d", `M ${x1} ${cy} C ${mid} ${cy}, ${mid} ${y2}, ${x2} ${y2}`);
-    path.setAttribute("fill", "none");
-    path.setAttribute("stroke", doc.defaultView?.getComputedStyle(node).backgroundColor ?? "#6d4aff");
-    path.setAttribute("stroke-width", "3");
-    path.setAttribute("stroke-linecap", "round");
-    svg.appendChild(path);
-  });
-
-  map.insertBefore(svg, map.firstChild);
-}
-
 export function finalizeSheetDocument(doc: Document, style: SheetStyle, orientation: Orientation): void {
-  if (style === "mindmap") drawMindmapLinks(doc);
-  else fitSheetToPage(doc, orientation, style === "compact" ? 1.2 : 1.6);
+  fitSheetToPage(doc, orientation, style === "compact" ? 1.2 : 1.6);
 }

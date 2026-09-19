@@ -3,7 +3,7 @@
     "slug": "fiches-de-revision",
     "label": "Fiches de révision en ligne",
     "title": "Fiches de révision en ligne, créées par IA | Skoolz",
-    "description": "Crée tes fiches de révision en quelques secondes à partir de ton cours (PDF, Word, photo). Fiches colorées, cartes mentales, schémas, à imprimer en A4 avec Skoolz.",
+    "description": "Crée tes fiches de révision en quelques secondes à partir de ton cours (PDF, Word, photo). Fiches colorées, compactées, schémas, à imprimer en A4 avec Skoolz.",
     "h1": "Fiches de révision en ligne : crée-les en quelques secondes",
     "intro": "Tu as un cours à apprendre et pas le temps de tout résumer à la main ? Skoolz transforme ton cours en fiche de révision claire, synthétique et complète. Tu importes un PDF, un document Word ou des photos de ton cahier, et l'IA rédige la fiche à ta place.",
     "blocks": [
@@ -19,7 +19,7 @@
         "bullets": [
           "Il lit ton cours au format PDF, Word, PowerPoint, texte ou en photo, y compris plusieurs photos d'un même chapitre.",
           "Il rédige une fiche synthétique qui reprend tout le contenu important, section par section.",
-          "Il te propose la fiche en texte modifiable, en fiche colorée, en fiche compactée, en carte mentale ou en schéma.",
+          "Il te propose la fiche en texte modifiable, en fiche colorée, en fiche compactée ou en schéma.",
           "Il classe automatiquement la fiche dans la bonne matière.",
           "Tu peux l'imprimer en A4, en portrait ou en paysage, ou l'enregistrer en PDF."
         ]
@@ -35,6 +35,12 @@
         "paragraphs": [
           "Skoolz s'utilise pour toutes les matières : histoire-géographie, SVT, physique-chimie, mathématiques, français, anglais, philosophie, SES et bien d'autres. Il convient au collège, au lycée et aux études supérieures."
         ]
+      },
+      {
+        "h2": "Un long cours ? Plusieurs fiches, rien d'oublié",
+        "paragraphs": [
+          "Quand ton cours est long ou compte beaucoup de photos, Skoolz ne le tasse pas dans une fiche illisible : il le répartit en plusieurs fiches, à peu près une toutes les une à trois pages, en regroupant les idées par sous-thème. Chaque fiche reste courte à relire, et tout le contenu du cours est conservé."
+        ]
       }
     ],
     "faq": [
@@ -44,14 +50,18 @@
       },
       {
         "q": "Peut-on imprimer les fiches de révision ?",
-        "a": "Oui. Les fiches colorées, compactées, les cartes mentales et les schémas sont mis en page au format A4, en portrait ou en paysage, prêts à imprimer ou à enregistrer en PDF."
+        "a": "Oui. Les fiches colorées, compactées et les schémas sont mis en page au format A4, en portrait ou en paysage, prêts à imprimer ou à enregistrer en PDF."
       },
       {
         "q": "Faut-il retaper son cours ?",
         "a": "Non. Tu peux importer un fichier ou prendre ton cours en photo. Skoolz lit le contenu et rédige la fiche."
       }
     ],
-    "related": ["generateur-fiche-de-revision-ia", "comment-faire-une-fiche-de-revision", "carte-mentale-revision"]
+    "related": [
+      "generateur-fiche-de-revision-ia",
+      "comment-faire-une-fiche-de-revision",
+      "carte-mentale-revision"
+    ]
   },
   {
     "slug": "generateur-fiche-de-revision-ia",
@@ -103,7 +113,11 @@
         "a": "Quelques secondes pour un cours court, un peu plus pour un long chapitre ou plusieurs photos."
       }
     ],
-    "related": ["fiches-de-revision", "carte-mentale-revision", "reviser-efficacement"]
+    "related": [
+      "fiches-de-revision",
+      "carte-mentale-revision",
+      "reviser-efficacement"
+    ]
   },
   {
     "slug": "comment-faire-une-fiche-de-revision",
@@ -163,13 +177,17 @@
         "a": "Écrire aide à mémoriser. Le plus efficace est de générer une base, puis de la reformuler et de la compléter soi-même."
       }
     ],
-    "related": ["fiches-de-revision", "reviser-efficacement", "carte-mentale-revision"]
+    "related": [
+      "fiches-de-revision",
+      "reviser-efficacement",
+      "carte-mentale-revision"
+    ]
   },
   {
     "slug": "carte-mentale-revision",
     "label": "Carte mentale pour réviser",
-    "title": "Carte mentale pour réviser : méthode et générateur | Skoolz",
-    "description": "Comment faire une carte mentale pour réviser un cours : méthode, exemples et outil. Skoolz transforme ton cours en carte mentale imprimable en un clic.",
+    "title": "Carte mentale pour réviser : la méthode simple | Skoolz",
+    "description": "Comment faire une carte mentale pour réviser un cours : méthode en 5 étapes, quand l'utiliser et comment la combiner avec une fiche de révision Skoolz.",
     "h1": "Carte mentale pour réviser : la méthode simple",
     "intro": "Une carte mentale est un schéma en étoile qui part d'une idée centrale et se ramifie en branches. Elle aide à voir un chapitre d'un seul regard et à comprendre comment les notions se relient entre elles.",
     "blocks": [
@@ -191,29 +209,34 @@
         ]
       },
       {
-        "h2": "La carte mentale avec Skoolz",
+        "h2": "Carte mentale ou fiche colorée : avec Skoolz",
         "paragraphs": [
-          "Dans Skoolz, chaque fiche générée peut s'afficher en carte mentale : le titre du chapitre au centre, les grandes parties en branches, les points clés abrégés. Elle est mise en page pour l'impression en A4 paysage. La version complète reste disponible en fiche texte."
+          "Skoolz ne dessine pas de carte mentale : il génère des fiches de révision colorées, où chaque partie du cours forme un bloc numéroté. C'est une excellente base pour construire ta propre carte mentale à la main : les blocs deviennent tes branches, les mots-clés tes feuilles.",
+          "Le plus efficace est de combiner les deux : la fiche pour le détail, la carte dessinée de mémoire pour vérifier que tu comprends comment tout s'articule."
         ]
       }
     ],
     "faq": [
       {
         "q": "Une carte mentale remplace-t-elle une fiche de révision ?",
-        "a": "Elle la complète. La carte donne la vue d'ensemble, la fiche contient le détail. Skoolz propose les deux à partir du même cours."
+        "a": "Elle la complète. La carte donne la vue d'ensemble, la fiche contient le détail. Skoolz te fournit la fiche complète, tu peux t'en servir pour construire ta carte."
       },
       {
-        "q": "Peut-on imprimer une carte mentale ?",
-        "a": "Oui, la carte mentale Skoolz est mise en page en A4 paysage, prête à imprimer ou à enregistrer en PDF."
+        "q": "Comment imprimer ou conserver une carte mentale ?",
+        "a": "Une feuille A4 en paysage est le format le plus pratique. Skoolz, lui, met en page tes fiches colorées et compactées en A4, prêtes à imprimer ou à enregistrer en PDF."
       }
     ],
-    "related": ["fiches-de-revision", "comment-faire-une-fiche-de-revision", "reviser-efficacement"]
+    "related": [
+      "fiches-de-revision",
+      "comment-faire-une-fiche-de-revision",
+      "reviser-efficacement"
+    ]
   },
   {
     "slug": "fiche-de-revision-bac",
     "label": "Fiches de révision pour le bac",
     "title": "Fiches de révision bac : réviser avec Skoolz",
-    "description": "Prépare le bac avec des fiches de révision claires : importe tes cours de première ou de terminale, Skoolz génère fiches, cartes mentales, quiz et flashcards.",
+    "description": "Prépare le bac avec des fiches de révision claires : importe tes cours de première ou de terminale, Skoolz génère fiches, quiz et flashcards.",
     "h1": "Fiches de révision pour le bac",
     "intro": "Le bac demande de retenir beaucoup de notions dans beaucoup de matières. Les fiches de révision permettent de tout condenser et de réviser régulièrement, sans se noyer dans les cours.",
     "blocks": [
@@ -250,13 +273,17 @@
         "a": "Oui, il travaille à partir de ton propre cours, quelle que soit la matière."
       }
     ],
-    "related": ["fiche-de-revision-brevet", "reviser-efficacement", "fiches-de-revision"]
+    "related": [
+      "fiche-de-revision-brevet",
+      "reviser-efficacement",
+      "fiches-de-revision"
+    ]
   },
   {
     "slug": "fiche-de-revision-brevet",
     "label": "Fiches de révision pour le brevet",
     "title": "Fiches de révision brevet (3e) : réviser avec Skoolz",
-    "description": "Prépare le brevet avec des fiches de révision simples et complètes : importe tes cours de 3e, Skoolz génère fiches, cartes mentales et flashcards.",
+    "description": "Prépare le brevet avec des fiches de révision simples et complètes : importe tes cours de 3e, Skoolz génère fiches et flashcards.",
     "h1": "Fiches de révision pour le brevet",
     "intro": "Le brevet des collèges regroupe le français, les mathématiques, l'histoire-géographie et les sciences. Des fiches de révision courtes, une par chapitre, permettent de tout revoir calmement avant les épreuves.",
     "blocks": [
@@ -295,7 +322,11 @@
         "a": "Oui, il s'utilise du collège aux études supérieures, avec les cours de ton établissement."
       }
     ],
-    "related": ["fiche-de-revision-bac", "comment-faire-une-fiche-de-revision", "fiches-de-revision"]
+    "related": [
+      "fiche-de-revision-bac",
+      "comment-faire-une-fiche-de-revision",
+      "fiches-de-revision"
+    ]
   },
   {
     "slug": "reviser-efficacement",
@@ -340,6 +371,10 @@
         "a": "Des sessions de 25 à 45 minutes avec des pauses sont plus efficaces que de longues heures d'affilée."
       }
     ],
-    "related": ["comment-faire-une-fiche-de-revision", "fiches-de-revision", "carte-mentale-revision"]
+    "related": [
+      "comment-faire-une-fiche-de-revision",
+      "fiches-de-revision",
+      "carte-mentale-revision"
+    ]
   }
 ]

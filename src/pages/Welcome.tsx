@@ -30,7 +30,7 @@ const SLIDES: Slide[] = [
   {
     icon: Sparkles,
     title: "L'IA crée ta fiche",
-    text: "Synthétique mais complète, en fiche texte, colorée, compactée, carte mentale ou schéma.",
+    text: "Synthétique mais complète, en fiche texte, colorée, compactée ou schéma.",
     mascot: "/mascot-login.webp",
   },
   {

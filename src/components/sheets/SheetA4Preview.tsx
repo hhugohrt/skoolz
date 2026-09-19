@@ -108,8 +108,6 @@ export function SheetA4Preview({ sheet, style, orientation, onOrientationChange 
       <p className="mt-2 text-center text-[12px] text-text-secondary">
         Format A4 {orientation === "portrait" ? "portrait" : "paysage"} — dans la fenêtre d&rsquo;impression, choisis
         « Enregistrer au format PDF » pour la télécharger, et laisse les marges sur « Par défaut ».
-        {style === "mindmap" &&
-          " La carte mentale est un résumé visuel : les points les plus longs sont abrégés, tout figure dans la fiche texte."}
       </p>
     </div>
   );
