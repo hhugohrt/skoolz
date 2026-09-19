@@ -4,6 +4,7 @@ import { UploadCloud, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { api, ApiError } from "@/lib/api";
 import { compressImage } from "@/lib/imageCompress";
+import { PricingModal } from "@/components/billing/PricingModal";
 import type { SheetLayout } from "@/lib/sheetStyles";
 
 type Phase = "idle" | "uploading" | "generating" | "error";
@@ -25,9 +26,12 @@ export function CourseDropzone({ layout, onUploaded }: CourseDropzoneProps) {
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<string | null>(null);
+  const [needsPlan, setNeedsPlan] = useState(false);
+  const [plansOpen, setPlansOpen] = useState(false);
 
   async function handleFiles(input: File[]) {
     setError(null);
+    setNeedsPlan(false);
     const files = input.slice(0, MAX_PHOTOS);
     const images = files.filter((f) => f.type.startsWith("image/"));
     if (images.length > 0 && images.length < files.length) {
@@ -64,6 +68,7 @@ export function CourseDropzone({ layout, onUploaded }: CourseDropzoneProps) {
     } catch (err) {
       setProgress(null);
       setPhase("error");
+      setNeedsPlan(err instanceof ApiError && err.status === 402);
       setError(err instanceof ApiError ? err.message : "Impossible d'importer ce cours pour le moment.");
       onUploaded?.();
     }
@@ -127,11 +132,18 @@ export function CourseDropzone({ layout, onUploaded }: CourseDropzoneProps) {
       {error && (
         <p className="mt-3 text-[14px] text-red-500">
           {error}{" "}
-          <button type="button" onClick={() => setPhase("idle")} className="font-semibold underline">
-            Réessayer
-          </button>
+          {needsPlan ? (
+            <button type="button" onClick={() => setPlansOpen(true)} className="font-semibold text-purple underline">
+              Voir les plans
+            </button>
+          ) : (
+            <button type="button" onClick={() => setPhase("idle")} className="font-semibold underline">
+              Réessayer
+            </button>
+          )}
         </p>
       )}
+      {plansOpen && <PricingModal onClose={() => setPlansOpen(false)} />}
     </div>
   );
 }
