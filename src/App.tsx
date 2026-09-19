@@ -5,7 +5,7 @@ import { OnboardingProvider } from "@/context/OnboardingContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { OnboardingLayout } from "@/layouts/OnboardingLayout";
 import { AppLayout } from "@/layouts/AppLayout";
-import Landing from "@/pages/Landing";
+import Welcome from "@/pages/Welcome";
 import Terms from "@/pages/legal/Terms";
 import Privacy from "@/pages/legal/Privacy";
 import LegalNotice from "@/pages/legal/LegalNotice";
@@ -52,7 +52,7 @@ export default function App() {
     <AuthProvider>
       <PixelPageViews />
       <Routes>
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={<Welcome />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<SignIn />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

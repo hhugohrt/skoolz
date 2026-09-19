@@ -24,9 +24,6 @@ export function Footer() {
             Contact
           </Link>
         )}
-        <a href="/#faq" className="transition-colors hover:text-text">
-          Aide
-        </a>
       </nav>
       <button
         type="button"
