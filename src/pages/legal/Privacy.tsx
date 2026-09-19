@@ -39,7 +39,7 @@ export default function Privacy() {
         </ul>
         <p>
           Nous mesurons l&rsquo;audience du site et l&rsquo;efficacité de nos publicités avec le pixel de mesure de
-          <strong> Whop</strong> : il enregistre les pages visitées et peut déposer un identifiant sur ton appareil.
+          <strong> Whop</strong>, uniquement si tu l&rsquo;acceptes : il enregistre les pages visitées et peut déposer un identifiant sur ton appareil.
         </p>
       </LegalSection>
 
@@ -135,7 +135,7 @@ export default function Privacy() {
 
       <LegalSection title="9. Cookies et stockage local">
         <p>
-          Le pixel de mesure de Whop peut déposer un identifiant de navigation. Ton navigateur conserve aussi, sur ton appareil, un jeton de
+          Le pixel de mesure de Whop n&rsquo;est chargé qu&rsquo;après ton accord (bandeau affiché à ta première visite, refus possible sans conséquence) ; il peut déposer un identifiant de navigation. Tu peux changer d&rsquo;avis à tout moment via « Gérer mes cookies » en bas de page. Ton navigateur conserve aussi, sur ton appareil, un jeton de
           session qui te permet de rester connecté : il est strictement nécessaire au fonctionnement du service et
           disparaît à la déconnexion. Les polices d&rsquo;écriture sont hébergées sur notre site (aucune requête vers un
           service de polices tiers). La fenêtre de connexion Google n&rsquo;est chargée que si tu cliques sur « Continuer

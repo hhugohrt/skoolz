@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { ConsentBanner } from "@/components/legal/ConsentBanner";
 import { AuthProvider } from "@/context/AuthContext";
 import { OnboardingProvider } from "@/context/OnboardingContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -51,6 +52,7 @@ export default function App() {
   return (
     <AuthProvider>
       <PixelPageViews />
+      <ConsentBanner />
       <Routes>
         <Route path="/" element={<Welcome />} />
         <Route path="/signup" element={<SignUp />} />

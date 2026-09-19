@@ -6,6 +6,7 @@ import { Mascot } from "@/components/Mascot";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { useAuth } from "@/context/AuthContext";
 import { usePageMeta } from "@/lib/usePageMeta";
+import { reopenConsent } from "@/lib/consent";
 
 const PAGE_TITLE = "Skoolz — Fiches de révision par IA, colorées et imprimables";
 const PAGE_DESCRIPTION =
@@ -115,6 +116,9 @@ export default function Welcome() {
           <Link to="/confidentialite" className="hover:text-text">
             Confidentialité
           </Link>
+          <button type="button" onClick={reopenConsent} className="hover:text-text">
+            Gérer mes cookies
+          </button>
         </nav>
       </div>
     </div>

@@ -16,7 +16,7 @@ export const LEGAL = {
   // Adresse à laquelle les utilisateurs peuvent vous écrire (droits RGPD, questions, signalements)
   contactEmail: "",
 
-  lastUpdated: "18 septembre 2026",
+  lastUpdated: "19 septembre 2026",
 } as const;
 
 export function isLegalComplete(): boolean {

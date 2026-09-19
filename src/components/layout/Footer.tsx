@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ChevronDown, Globe } from "lucide-react";
 import { LEGAL } from "@/lib/legal";
+import { reopenConsent } from "@/lib/consent";
 
 export function Footer() {
   return (
@@ -24,6 +25,9 @@ export function Footer() {
             Contact
           </Link>
         )}
+        <button type="button" onClick={reopenConsent} className="transition-colors hover:text-text">
+          Gérer mes cookies
+        </button>
       </nav>
       <button
         type="button"
