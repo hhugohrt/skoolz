@@ -274,6 +274,9 @@ export const api = {
   adminUpdateUser: (token: string, id: string, patch: { plan?: "free" | "premium"; emailVerified?: boolean; firstName?: string }) =>
     request<{ user: AdminUser }>(`/api/admin/users/${id}`, { method: "PATCH", body: JSON.stringify(patch) }, token),
 
+  adminBulkDeleteUsers: (token: string, ids: string[]) =>
+    request<{ deleted: number; skipped: number }>("/api/admin/users/bulk-delete", { method: "POST", body: JSON.stringify({ ids }) }, token),
+
   adminDeleteUser: (token: string, id: string) => request<void>(`/api/admin/users/${id}`, { method: "DELETE" }, token),
 
   adminCourses: (token: string, status?: string) =>

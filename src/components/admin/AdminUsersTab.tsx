@@ -189,13 +189,17 @@ function UserDetail({ id, onClose, onChanged }: { id: string; onClose: () => voi
 }
 
 export function AdminUsersTab() {
-  const { token } = useAuth();
+  const { token, user: me } = useAuth();
   const [q, setQ] = useState("");
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
   const [offset, setOffset] = useState(0);
   const [data, setData] = useState<{ total: number; users: AdminUser[] } | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [confirmBulk, setConfirmBulk] = useState(false);
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [bulkMessage, setBulkMessage] = useState<string | null>(null);
 
   // La recherche part 300 ms après la dernière frappe.
   useEffect(() => {
@@ -210,6 +214,30 @@ export function AdminUsersTab() {
     api.adminUsers(token!, { q: query, filter, offset }).then(setData).catch(() => setData({ total: 0, users: [] }));
   }, [token, query, filter, offset]);
   useEffect(load, [load]);
+
+  // On ne peut sélectionner ni son propre compte ni un administrateur.
+  const selectable = (data?.users ?? []).filter((u) => !u.isAdmin && u.id !== me?.id);
+  const allSelected = selectable.length > 0 && selectable.every((u) => selected.includes(u.id));
+
+  function toggle(id: string) {
+    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+    setConfirmBulk(false);
+  }
+
+  async function deleteSelected() {
+    setBulkBusy(true);
+    try {
+      const { deleted } = await api.adminBulkDeleteUsers(token!, selected);
+      setBulkMessage(`${deleted} compte${deleted > 1 ? "s" : ""} supprimé${deleted > 1 ? "s" : ""}.`);
+    } catch {
+      setBulkMessage("Suppression impossible pour le moment.");
+    } finally {
+      setSelected([]);
+      setConfirmBulk(false);
+      setBulkBusy(false);
+      load();
+    }
+  }
 
   return (
     <div>
@@ -248,7 +276,40 @@ export function AdminUsersTab() {
         ))}
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-[14px] border border-border/60 bg-white">
+      {selectable.length > 0 && (
+        <div className="mt-4 flex flex-wrap items-center gap-3 text-[13px]">
+          <label className="flex cursor-pointer items-center gap-2 font-semibold text-text-secondary">
+            <input
+              type="checkbox"
+              checked={allSelected}
+              onChange={() => setSelected(allSelected ? [] : selectable.map((u) => u.id))}
+              className="h-4 w-4 accent-[#6d4aff]"
+            />
+            Tout sélectionner
+          </label>
+          {selected.length > 0 &&
+            (confirmBulk ? (
+              <span className="flex flex-wrap items-center gap-2">
+                <span className="text-red-600">
+                  Supprimer définitivement {selected.length} compte{selected.length > 1 ? "s" : ""} et leurs fiches ?
+                </span>
+                <button type="button" disabled={bulkBusy} onClick={deleteSelected} className="flex items-center gap-1.5 rounded-full bg-red-600 px-4 py-1.5 font-semibold text-white disabled:opacity-60">
+                  {bulkBusy && <Loader2 className="h-3.5 w-3.5 animate-spin" />} Oui, supprimer
+                </button>
+                <button type="button" onClick={() => setConfirmBulk(false)} className="rounded-full border border-border bg-white px-4 py-1.5 font-semibold text-text">
+                  Annuler
+                </button>
+              </span>
+            ) : (
+              <button type="button" onClick={() => setConfirmBulk(true)} className="flex items-center gap-1.5 rounded-full border border-red-200 bg-white px-4 py-1.5 font-semibold text-red-600 hover:bg-red-50">
+                <Trash2 className="h-3.5 w-3.5" /> Supprimer la sélection ({selected.length})
+              </button>
+            ))}
+          {bulkMessage && selected.length === 0 && <span className="text-text-secondary">{bulkMessage}</span>}
+        </div>
+      )}
+
+      <div className="mt-3 overflow-hidden rounded-[14px] border border-border/60 bg-white">
         {data === null ? (
           <p className="p-4 text-[14px] text-text-secondary">Chargement…</p>
         ) : data.users.length === 0 ? (
@@ -256,8 +317,21 @@ export function AdminUsersTab() {
         ) : (
           <ul className="divide-y divide-border/60">
             {data.users.map((u) => (
-              <li key={u.id}>
-                <button type="button" onClick={() => setOpenId(u.id)} className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-2/50">
+              <li key={u.id} className="flex items-center hover:bg-surface-2/50">
+                <span className="flex w-11 shrink-0 items-center justify-center pl-3">
+                  {u.isAdmin || u.id === me?.id ? (
+                    <span className="h-4 w-4" />
+                  ) : (
+                    <input
+                      type="checkbox"
+                      checked={selected.includes(u.id)}
+                      onChange={() => toggle(u.id)}
+                      aria-label={`Sélectionner ${u.email}`}
+                      className="h-4 w-4 accent-[#6d4aff]"
+                    />
+                  )}
+                </span>
+                <button type="button" onClick={() => setOpenId(u.id)} className="flex min-w-0 flex-1 items-center gap-3 py-3 pr-4 text-left">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-purple/10 text-[12px] font-bold text-purple">
                     {u.firstName.slice(0, 2).toUpperCase()}
                   </span>
