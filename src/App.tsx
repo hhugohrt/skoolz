@@ -1,4 +1,5 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import { OnboardingProvider } from "@/context/OnboardingContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -31,9 +32,24 @@ import Profile from "@/pages/app/Profile";
 import Settings from "@/pages/app/Settings";
 import MobileUpload from "@/pages/MobileUpload";
 
+// Le pixel Whop compte le chargement initial ; on lui signale ensuite chaque navigation interne.
+function PixelPageViews() {
+  const { pathname } = useLocation();
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    (window as unknown as { whop?: { track: (event: string) => void } }).whop?.track("page");
+  }, [pathname]);
+  return null;
+}
+
 export default function App() {
   return (
     <AuthProvider>
+      <PixelPageViews />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/signup" element={<SignUp />} />

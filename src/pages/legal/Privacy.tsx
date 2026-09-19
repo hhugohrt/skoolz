@@ -37,7 +37,10 @@ export default function Privacy() {
             connexion abusives).
           </li>
         </ul>
-        <p>Nous n&rsquo;utilisons aucun outil de suivi publicitaire ni d&rsquo;analyse d&rsquo;audience.</p>
+        <p>
+          Nous mesurons l&rsquo;audience du site et l&rsquo;efficacité de nos publicités avec le pixel de mesure de
+          <strong> Whop</strong> : il enregistre les pages visitées et peut déposer un identifiant sur ton appareil.
+        </p>
       </LegalSection>
 
       <LegalSection title="3. Pourquoi, et sur quelle base légale ?">
@@ -132,7 +135,7 @@ export default function Privacy() {
 
       <LegalSection title="9. Cookies et stockage local">
         <p>
-          Nous ne déposons aucun cookie de suivi. Ton navigateur conserve uniquement, sur ton appareil, un jeton de
+          Le pixel de mesure de Whop peut déposer un identifiant de navigation. Ton navigateur conserve aussi, sur ton appareil, un jeton de
           session qui te permet de rester connecté : il est strictement nécessaire au fonctionnement du service et
           disparaît à la déconnexion. Les polices d&rsquo;écriture sont hébergées sur notre site (aucune requête vers un
           service de polices tiers). La fenêtre de connexion Google n&rsquo;est chargée que si tu cliques sur « Continuer
