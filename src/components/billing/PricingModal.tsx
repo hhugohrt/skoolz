@@ -104,20 +104,7 @@ export function PricingModal({ onClose }: { onClose: () => void }) {
           <PlanPicker value={plan} onChange={setPlan} />
         </div>
 
-        <button
-          type="button"
-          onClick={subscribe}
-          className="mt-6 flex h-[54px] w-full items-center justify-center gap-2 rounded-[16px] bg-purple text-[16px] font-semibold text-white transition-opacity hover:opacity-90"
-        >
-          S&rsquo;abonner
-        </button>
-
-        <div className="my-5 flex items-center gap-3 text-[12px] text-text-secondary">
-          <span className="h-px flex-1 bg-border" />
-          ou
-          <span className="h-px flex-1 bg-border" />
-        </div>
-
+        <div className="mt-6">
         {link ? (
           <div className="rounded-[14px] border border-border bg-surface-2/60 p-4">
             <p className="text-[14px] font-semibold text-text">Envoie ce message à ton parent</p>
@@ -148,12 +135,27 @@ export function PricingModal({ onClose }: { onClose: () => void }) {
             type="button"
             onClick={askParent}
             disabled={loadingLink}
-            className="flex h-[50px] w-full items-center justify-center gap-2 rounded-[16px] border border-border bg-white text-[15px] font-semibold text-text transition-colors hover:border-purple/40 disabled:opacity-60"
+            className="flex h-[58px] w-full items-center justify-center gap-2.5 rounded-[16px] bg-purple text-[16px] font-semibold text-white shadow-[0_14px_34px_rgba(109,74,255,0.35)] transition-opacity hover:opacity-90 disabled:opacity-60"
           >
-            {loadingLink ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4 text-purple" />}
+            {loadingLink ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-5 w-5" />}
             Demander à mon parent de payer
           </button>
         )}
+        </div>
+
+        <div className="my-5 flex items-center gap-3 text-[12px] text-text-secondary">
+          <span className="h-px flex-1 bg-border" />
+          ou
+          <span className="h-px flex-1 bg-border" />
+        </div>
+
+        <button
+          type="button"
+          onClick={subscribe}
+          className="flex h-[50px] w-full items-center justify-center gap-2 rounded-[16px] border border-border bg-white text-[15px] font-semibold text-text transition-colors hover:border-purple/40"
+        >
+          Je m&rsquo;abonne moi-même
+        </button>
         {error && <p className="mt-3 text-[13px] text-red-500">{error}</p>}
           </>
         )}

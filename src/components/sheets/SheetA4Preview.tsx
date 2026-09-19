@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Printer, RectangleHorizontal, RectangleVertical } from "lucide-react";
 import type { ApiSheetDetail } from "@/lib/api";
-import { SheetExportButton } from "@/components/sheets/SheetExportButton";
 import { A4_PX, buildSheetHtml, finalizeSheetDocument } from "@/lib/sheetHtml";
 import type { Orientation, SheetStyle } from "@/lib/sheetStyles";
 
@@ -76,8 +75,6 @@ export function SheetA4Preview({ sheet, style, orientation, onOrientationChange 
           })}
         </div>
 
-        <div className="flex flex-wrap items-start gap-2">
-        <SheetExportButton sheet={sheet} style={style} orientation={orientation} />
         <button
           type="button"
           onClick={handlePrint}
@@ -86,7 +83,6 @@ export function SheetA4Preview({ sheet, style, orientation, onOrientationChange 
           <Printer className="h-4 w-4" />
           Imprimer / Enregistrer en PDF
         </button>
-        </div>
       </div>
 
       <div ref={wrapperRef} className="mt-4 overflow-hidden rounded-[14px] border border-border/60 bg-surface-2 p-0">

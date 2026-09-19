@@ -7,7 +7,6 @@ import { SheetA4Preview } from "@/components/sheets/SheetA4Preview";
 import { SheetEditor } from "@/components/sheets/SheetEditor";
 import { SubjectPrompt } from "@/components/sheets/SubjectPrompt";
 import { LockedArea } from "@/components/billing/LockedArea";
-import { SheetExportButton } from "@/components/sheets/SheetExportButton";
 import { SECTION_LABELS } from "@/lib/sectionLabels";
 import { DEFAULT_LAYOUT, STYLE_OPTIONS, isPrintableStyle, type Orientation, type SheetLayout, type SheetView } from "@/lib/sheetStyles";
 
@@ -135,8 +134,6 @@ export default function SheetDetail() {
             ) : (
               <span />
             )}
-            <div className="flex flex-wrap items-start gap-2">
-            <SheetExportButton sheet={sheet} style="colorful" orientation="portrait" />
             <button
               type="button"
               onClick={() => {
@@ -148,7 +145,6 @@ export default function SheetDetail() {
               <Pencil className="h-4 w-4 text-purple" />
               Modifier la fiche
             </button>
-            </div>
           </div>
 
           <div className="mt-3 flex flex-col gap-4">
