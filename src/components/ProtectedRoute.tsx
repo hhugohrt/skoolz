@@ -23,7 +23,7 @@ export function ProtectedRoute({ children, requireOnboarding = false }: Protecte
   }
 
   if (requireOnboarding && !user.onboardingCompleted) {
-    return <Navigate to="/onboarding/level" replace />;
+    return <Navigate to="/onboarding" replace />;
   }
 
   return <>{children}</>;

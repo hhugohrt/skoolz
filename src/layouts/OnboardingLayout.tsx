@@ -1,4 +1,6 @@
+import { useRef } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { Logo } from "@/components/Logo";
 import { usePageMeta } from "@/lib/usePageMeta";
@@ -9,7 +11,16 @@ export function OnboardingLayout() {
   usePageMeta({ title: "Bienvenue — Skoolz", path: "/onboarding" });
   const location = useLocation();
   // L'étape « écran d'accueil » n'existe que sur téléphone.
-  const STEPS = shouldShowInstallTutorial() ? ["level", "subjects", "install", "complete"] : ["level", "subjects", "complete"];
+  const { user } = useAuth();
+  // Décidé une seule fois : la barre de progression ne doit pas changer quand l'adresse vient d'être confirmée.
+  const needsVerify = useRef(user ? !user.emailVerified : false).current;
+  const STEPS = [
+    ...(needsVerify ? ["verify"] : []),
+    "level",
+    "subjects",
+    ...(shouldShowInstallTutorial() ? ["install"] : []),
+    "complete",
+  ];
   const currentStep = STEPS.findIndex((step) => location.pathname.endsWith(step));
 
   return (

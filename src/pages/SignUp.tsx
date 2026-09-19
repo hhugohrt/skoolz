@@ -26,7 +26,7 @@ export default function SignUp() {
     setSubmitting(true);
     try {
       await register(email, password, firstName);
-      navigate("/onboarding/level");
+      navigate("/onboarding");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Impossible de créer le compte.");
     } finally {
@@ -42,7 +42,7 @@ export default function SignUp() {
       mascotSrc="/mascot-signup.webp"
     >
       <AuthCard title="Créer un compte" subtitle="Commence ton aventure avec Skoolz !">
-        <GoogleAuth onDone={(user) => navigate(user.onboardingCompleted ? "/app" : "/onboarding/level")} />
+        <GoogleAuth onDone={(user) => navigate(user.onboardingCompleted ? "/app" : "/onboarding")} />
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <TextInput

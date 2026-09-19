@@ -4,7 +4,7 @@ import { PrimaryButton } from "@/components/auth/PrimaryButton";
 import { Mascot } from "@/components/Mascot";
 import { useOnboarding } from "@/context/OnboardingContext";
 import { useAuth } from "@/context/AuthContext";
-import { api, type ApiSubject } from "@/lib/api";
+import { api, ApiError, type ApiSubject } from "@/lib/api";
 
 const LEVEL_LABELS: Record<string, string> = {
   "3e": "3e",
@@ -39,7 +39,11 @@ export default function OnboardingComplete() {
       const { user } = await api.submitOnboarding(token!, { level, subjectIds, theme: "auto" });
       setUser(user);
       navigate("/app");
-    } catch {
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 403) {
+        navigate("/onboarding/verify");
+        return;
+      }
       setError("Impossible d'enregistrer tes préférences. Réessaie.");
     } finally {
       setSubmitting(false);

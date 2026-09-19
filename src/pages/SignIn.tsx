@@ -44,7 +44,7 @@ export default function SignIn() {
     setSubmitting(true);
     try {
       const user = await login(email, password);
-      navigate(user.onboardingCompleted ? "/app" : "/onboarding/level");
+      navigate(user.onboardingCompleted ? "/app" : "/onboarding");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Impossible de se connecter.");
     } finally {
@@ -68,7 +68,7 @@ export default function SignIn() {
       heroFeatures={heroFeatures}
     >
       <AuthCard title="Ravi de te revoir !" subtitle="Connecte-toi à ton compte Skoolz.">
-        <GoogleAuth onDone={(user) => navigate(user.onboardingCompleted ? "/app" : "/onboarding/level")} />
+        <GoogleAuth onDone={(user) => navigate(user.onboardingCompleted ? "/app" : "/onboarding")} />
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <TextInput
