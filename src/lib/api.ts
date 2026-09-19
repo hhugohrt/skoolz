@@ -203,6 +203,15 @@ export const api = {
 
   listCourses: (token: string) => request<{ courses: ApiCourse[] }>("/api/courses", {}, token),
 
+  createPhotoCourse: (token: string) =>
+    request<{ course: ApiCourse }>("/api/courses/photo-course", { method: "POST" }, token),
+
+  addCoursePhoto: (token: string, courseId: string, photo: File) => {
+    const form = new FormData();
+    form.append("photo", photo);
+    return request<{ course: ApiCourse }>(`/api/courses/${courseId}/photos`, { method: "POST", body: form }, token);
+  },
+
   uploadCourse: (token: string, file: File, opts?: { subjectId?: string; chapter?: string }) => {
     const form = new FormData();
     form.append("file", file);
