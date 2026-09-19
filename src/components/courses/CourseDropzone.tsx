@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { api, ApiError } from "@/lib/api";
 import { compressImage } from "@/lib/imageCompress";
 import { PricingModal } from "@/components/billing/PricingModal";
+import { CameraCapture, isLiveCameraSupported } from "@/components/courses/CameraCapture";
 import type { SheetLayout } from "@/lib/sheetStyles";
 
 type Phase = "idle" | "uploading" | "generating" | "error";
@@ -36,6 +37,7 @@ export function CourseDropzone({ layout, onUploaded }: CourseDropzoneProps) {
   const [progress, setProgress] = useState<string | null>(null);
   const [needsPlan, setNeedsPlan] = useState(false);
   const [plansOpen, setPlansOpen] = useState(false);
+  const [cameraOpen, setCameraOpen] = useState(false);
   // Photos en attente : l'appareil photo ne rend qu'une image à la fois, on les rassemble avant de créer la fiche.
   const [staged, setStaged] = useState<StagedPhoto[]>([]);
   const stagedRef = useRef<StagedPhoto[]>([]);
@@ -55,6 +57,11 @@ export function CourseDropzone({ layout, onUploaded }: CourseDropzoneProps) {
       }));
       return [...prev, ...added];
     });
+  }
+
+  function openCamera() {
+    if (isLiveCameraSupported()) setCameraOpen(true);
+    else cameraRef.current?.click();
   }
 
   function removeStaged(id: string) {
@@ -182,7 +189,7 @@ export function CourseDropzone({ layout, onUploaded }: CourseDropzoneProps) {
                   <li>
                     <button
                       type="button"
-                      onClick={() => cameraRef.current?.click()}
+                      onClick={openCamera}
                       aria-label="Ajouter une photo"
                       className="flex aspect-square w-full items-center justify-center rounded-[10px] border-2 border-dashed border-border text-purple hover:border-purple/50"
                     >
@@ -195,19 +202,19 @@ export function CourseDropzone({ layout, onUploaded }: CourseDropzoneProps) {
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <button
                   type="button"
-                  onClick={() => cameraRef.current?.click()}
+                  onClick={openCamera}
                   disabled={staged.length >= MAX_PHOTOS}
-                  className="flex h-11 items-center justify-center gap-2 rounded-[12px] border border-border bg-white text-[14px] font-semibold text-text transition-colors hover:border-purple/40 disabled:opacity-50"
+                  className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-[12px] border border-border bg-white px-2 text-[14px] font-semibold text-text transition-colors hover:border-purple/40 disabled:opacity-50"
                 >
-                  <Camera className="h-4 w-4 text-purple" /> Prendre une photo
+                  <Camera className="h-4 w-4 shrink-0 text-purple" /> Appareil photo
                 </button>
                 <button
                   type="button"
                   onClick={() => galleryRef.current?.click()}
                   disabled={staged.length >= MAX_PHOTOS}
-                  className="flex h-11 items-center justify-center gap-2 rounded-[12px] border border-border bg-white text-[14px] font-semibold text-text transition-colors hover:border-purple/40 disabled:opacity-50"
+                  className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-[12px] border border-border bg-white px-2 text-[14px] font-semibold text-text transition-colors hover:border-purple/40 disabled:opacity-50"
                 >
-                  <Images className="h-4 w-4 text-purple" /> Galerie
+                  <Images className="h-4 w-4 shrink-0 text-purple" /> Galerie
                 </button>
               </div>
 
@@ -255,11 +262,11 @@ export function CourseDropzone({ layout, onUploaded }: CourseDropzoneProps) {
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  cameraRef.current?.click();
+                  openCamera();
                 }}
-                className="mt-1 flex items-center gap-2 rounded-full bg-purple/10 px-4 py-2 text-[14px] font-semibold text-purple"
+                className="mt-1 flex items-center gap-2 whitespace-nowrap rounded-full bg-purple/10 px-4 py-2 text-[14px] font-semibold text-purple"
               >
-                <Camera className="h-4 w-4" /> Prendre en photo
+                <Camera className="h-4 w-4 shrink-0" /> Prendre mes photos
               </button>
             </>
           )}
@@ -279,6 +286,17 @@ export function CourseDropzone({ layout, onUploaded }: CourseDropzoneProps) {
             </button>
           )}
         </p>
+      )}
+      {cameraOpen && (
+        <CameraCapture
+          count={staged.length}
+          onCapture={(file) => stagePhotos([file])}
+          onClose={() => setCameraOpen(false)}
+          onFallback={() => {
+            setCameraOpen(false);
+            cameraRef.current?.click();
+          }}
+        />
       )}
       {plansOpen && <PricingModal onClose={() => setPlansOpen(false)} />}
     </div>
