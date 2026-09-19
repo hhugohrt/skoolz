@@ -7,6 +7,7 @@ import { BackgroundBlobs } from "@/components/BackgroundBlobs";
 import { useAuth } from "@/context/AuthContext";
 import { usePageMeta } from "@/lib/usePageMeta";
 import { reopenConsent } from "@/lib/consent";
+import { SEO_PAGES } from "@/seo/data";
 
 const PAGE_TITLE = "Skoolz — Fiches de révision par IA, colorées et imprimables";
 const PAGE_DESCRIPTION =
@@ -62,14 +63,18 @@ export default function Welcome() {
           </Link>
         </div>
 
-        <div className="flex w-full flex-1 items-center justify-center py-8">
+        <h1 className="mt-6 text-center text-[15px] font-semibold text-text-secondary">
+          Skoolz : tes fiches de révision générées par IA, colorées et imprimables
+        </h1>
+
+        <div className="flex w-full flex-1 items-center justify-center py-6">
           <div className="w-full max-w-[560px] rounded-[20px] border border-border/60 bg-white p-8 text-center shadow-[0_18px_60px_rgba(54,44,120,0.1)] sm:p-12">
             <Mascot src={slide.mascot} priority className="mx-auto h-[120px] w-[175px]" />
 
             <div className="mx-auto mt-4 flex h-11 w-11 items-center justify-center rounded-full bg-purple/10 text-purple">
               <slide.icon className="h-5 w-5" strokeWidth={2.25} />
             </div>
-            <h1 className="mt-4 font-display text-[26px] font-bold text-text sm:text-[30px]">{slide.title}</h1>
+            <h2 className="mt-4 font-display text-[26px] font-bold text-text sm:text-[30px]">{slide.title}</h2>
             <p className="mx-auto mt-2 max-w-[400px] text-[16px] leading-relaxed text-text-secondary">{slide.text}</p>
 
             <div className="mt-6 flex items-center justify-center gap-2" aria-hidden>
@@ -105,6 +110,19 @@ export default function Welcome() {
             )}
           </div>
         </div>
+
+        <nav aria-label="Guides de révision" className="mb-6 w-full max-w-[560px] text-center">
+          <p className="text-[13px] font-semibold text-text-secondary">Guides pour réviser</p>
+          <ul className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1 text-[13px]">
+            {SEO_PAGES.map((page) => (
+              <li key={page.slug}>
+                <Link to={`/${page.slug}`} className="text-purple hover:underline">
+                  {page.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
         <nav aria-label="Liens légaux" className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-[13px] text-text-secondary">
           <Link to="/mentions-legales" className="hover:text-text">

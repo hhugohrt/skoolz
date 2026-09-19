@@ -7,6 +7,8 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { OnboardingLayout } from "@/layouts/OnboardingLayout";
 import { AppLayout } from "@/layouts/AppLayout";
 import Welcome from "@/pages/Welcome";
+import Guide from "@/pages/Guide";
+import { SEO_PAGES } from "@/seo/data";
 import Terms from "@/pages/legal/Terms";
 import Privacy from "@/pages/legal/Privacy";
 import LegalNotice from "@/pages/legal/LegalNotice";
@@ -56,6 +58,9 @@ export default function App() {
       <ConsentBanner />
       <Routes>
         <Route path="/" element={<Welcome />} />
+        {SEO_PAGES.map((page) => (
+          <Route key={page.slug} path={`/${page.slug}`} element={<Guide page={page} />} />
+        ))}
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<SignIn />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
