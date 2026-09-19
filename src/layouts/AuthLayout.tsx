@@ -32,13 +32,16 @@ export function AuthLayout({
         <Header prompt={headerPrompt} ctaLabel={headerCtaLabel} ctaTo={headerCtaTo} />
 
         <div className="flex flex-col items-center gap-10 py-8 xl:flex-1 xl:flex-row xl:items-start xl:justify-between xl:gap-16 xl:py-3 xl:justify-center">
-          <MarketingHero
-            mascotSrc={mascotSrc}
-            heading={heroHeading}
-            subtitle={heroSubtitle}
-            features={heroFeatures}
-          />
-          <div className="flex w-full justify-center xl:w-auto xl:justify-end xl:pt-2">{children}</div>
+          {/* Sur téléphone et tablette, le formulaire passe en premier ; le texte de présentation suit en dessous. */}
+          <div className="order-2 flex w-full justify-center xl:order-1 xl:w-auto">
+            <MarketingHero
+              mascotSrc={mascotSrc}
+              heading={heroHeading}
+              subtitle={heroSubtitle}
+              features={heroFeatures}
+            />
+          </div>
+          <div className="order-1 flex w-full justify-center xl:order-2 xl:w-auto xl:justify-end xl:pt-2">{children}</div>
         </div>
 
         <Footer />
