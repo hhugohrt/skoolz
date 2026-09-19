@@ -9,7 +9,7 @@ import { PlanPicker } from "@/components/billing/PlanPicker";
 export function PricingModal({ onClose }: { onClose: () => void }) {
   const { token, user } = useAuth();
   const [plan, setPlan] = useState<Plan["id"]>("yearly");
-  const [notice, setNotice] = useState<string | null>(null);
+  const [subscribing, setSubscribing] = useState(false);
   const [link, setLink] = useState<string | null>(null);
   const [loadingLink, setLoadingLink] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -25,6 +25,18 @@ export function PricingModal({ onClose }: { onClose: () => void }) {
       document.body.style.overflow = previous;
     };
   }, [onClose]);
+
+  async function subscribe() {
+    setSubscribing(true);
+    setError(null);
+    try {
+      const { url } = await api.createCheckout(token!, plan);
+      window.location.href = url;
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Impossible de démarrer le paiement pour le moment.");
+      setSubscribing(false);
+    }
+  }
 
   async function askParent() {
     setLoadingLink(true);
@@ -78,9 +90,14 @@ export function PricingModal({ onClose }: { onClose: () => void }) {
             <p className="mt-2 text-[14px] text-text-secondary">
               Toutes tes fiches sont débloquées. Merci de faire confiance à Skoolz !
             </p>
-            <div className="mt-5">
-              <PlanPicker value={plan} onChange={setPlan} />
-            </div>
+            <a
+              href="https://whop.com/@me/settings/memberships/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 flex h-[50px] w-full items-center justify-center rounded-[16px] border border-border bg-white text-[15px] font-semibold text-text transition-colors hover:border-purple/40"
+            >
+              Gérer mon abonnement
+            </a>
           </>
         ) : (
           <>
@@ -95,12 +112,13 @@ export function PricingModal({ onClose }: { onClose: () => void }) {
 
         <button
           type="button"
-          onClick={() => setNotice("Le paiement en ligne sera disponible très bientôt.")}
-          className="mt-6 h-[54px] w-full rounded-[16px] bg-purple text-[16px] font-semibold text-white transition-opacity hover:opacity-90"
+          onClick={subscribe}
+          disabled={subscribing}
+          className="mt-6 flex h-[54px] w-full items-center justify-center gap-2 rounded-[16px] bg-purple text-[16px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-70"
         >
+          {subscribing && <Loader2 className="h-4 w-4 animate-spin" />}
           S&rsquo;abonner
         </button>
-        {notice && <p className="mt-2 text-center text-[13px] text-text-secondary">{notice}</p>}
 
         <div className="my-5 flex items-center gap-3 text-[12px] text-text-secondary">
           <span className="h-px flex-1 bg-border" />

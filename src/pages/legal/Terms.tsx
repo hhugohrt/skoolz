@@ -93,6 +93,21 @@ export default function Terms() {
         </p>
       </LegalSection>
 
+      <LegalSection title="Abonnement et paiement">
+        <p>
+          Les fiches générées sont accessibles avec un abonnement payant, au tarif affiché dans l&rsquo;application
+          (mensuel ou annuel, TTC). L&rsquo;abonnement se renouvelle automatiquement à chaque échéance jusqu&rsquo;à sa
+          résiliation, possible à tout moment depuis la page de gestion de ton abonnement : la résiliation prend effet à
+          la fin de la période déjà payée. Le paiement peut être effectué par un parent ou tuteur via le lien prévu à cet
+          effet. Le paiement est traité par Whop.
+        </p>
+        <p>
+          Le service étant un contenu numérique fourni immédiatement, le droit de rétractation de 14 jours peut ne plus
+          s&rsquo;appliquer une fois le service utilisé, avec ton accord exprès ; contacte-nous à l&rsquo;adresse indiquée
+          dans les mentions légales pour toute demande.
+        </p>
+      </LegalSection>
+
       <LegalSection title="9. Résiliation">
         <p>
           Tu peux supprimer ton compte à tout moment depuis les paramètres. Nous pouvons suspendre ou supprimer un compte

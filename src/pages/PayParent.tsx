@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { BackgroundBlobs } from "@/components/BackgroundBlobs";
@@ -15,14 +15,32 @@ export default function PayParent() {
   const [firstName, setFirstName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [plan, setPlan] = useState<Plan["id"]>("yearly");
-  const [notice, setNotice] = useState<string | null>(null);
+  const [alreadyPremium, setAlreadyPremium] = useState(false);
+  const [paying, setPaying] = useState(false);
+  const [payError, setPayError] = useState<string | null>(null);
+  const paid = useSearchParams()[0].get("paid") === "1";
 
   useEffect(() => {
     api
       .getParentInvite(token ?? "")
-      .then(({ firstName }) => setFirstName(firstName))
+      .then((invite) => {
+        setFirstName(invite.firstName);
+        setAlreadyPremium(invite.alreadyPremium);
+      })
       .catch((err) => setError(err instanceof ApiError ? err.message : "Impossible de charger cette page."));
   }, [token]);
+
+  async function pay() {
+    setPaying(true);
+    setPayError(null);
+    try {
+      const { url } = await api.createParentCheckout(token ?? "", plan);
+      window.location.href = url;
+    } catch (err) {
+      setPayError(err instanceof ApiError ? err.message : "Impossible de démarrer le paiement pour le moment.");
+      setPaying(false);
+    }
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-bg">
@@ -38,6 +56,16 @@ export default function PayParent() {
                 <Loader2 className="h-4 w-4 animate-spin" /> Chargement…
               </p>
             ) : (
+              paid || alreadyPremium ? (
+              <>
+                <h1 className="font-display text-[24px] font-bold text-text sm:text-[28px]">Merci ! 🎉</h1>
+                <p className="mt-2 text-[15px] leading-relaxed text-text-secondary">
+                  {paid
+                    ? `Votre paiement est bien reçu : les fiches de ${firstName} sont en train d'être débloquées.`
+                    : `Les fiches de ${firstName} sont déjà débloquées.`}
+                </p>
+              </>
+              ) : (
               <>
                 <h1 className="font-display text-[24px] font-bold text-text sm:text-[28px]">
                   {firstName} aimerait votre aide
@@ -53,15 +81,16 @@ export default function PayParent() {
 
                 <button
                   type="button"
-                  onClick={() =>
-                    setNotice("Le paiement en ligne sera disponible très bientôt. Revenez sur ce lien dans quelques jours.")
-                  }
-                  className="mt-6 h-[54px] w-full rounded-[16px] bg-purple text-[16px] font-semibold text-white transition-opacity hover:opacity-90"
+                  onClick={pay}
+                  disabled={paying}
+                  className="mt-6 flex h-[54px] w-full items-center justify-center gap-2 rounded-[16px] bg-purple text-[16px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-70"
                 >
+                  {paying && <Loader2 className="h-4 w-4 animate-spin" />}
                   Payer l&rsquo;abonnement
                 </button>
-                {notice && <p className="mt-3 text-center text-[13px] text-text-secondary">{notice}</p>}
+                {payError && <p className="mt-3 text-center text-[13px] text-red-500">{payError}</p>}
               </>
+              )
             )}
           </div>
         </div>

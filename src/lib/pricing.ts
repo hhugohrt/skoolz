@@ -9,8 +9,8 @@ export interface Plan {
 }
 
 export const PLANS: Plan[] = [
-  { id: "yearly", name: "Annuel", price: "29,99 €", period: "/ an", note: "soit 2,50 € par mois", badge: "-50 %" },
-  { id: "monthly", name: "Mensuel", price: "4,99 €", period: "/ mois", note: "Sans engagement" },
+  { id: "yearly", name: "Annuel", price: "49,99 €", period: "/ an", note: "soit 4,17 € par mois", badge: "-48 %" },
+  { id: "monthly", name: "Mensuel", price: "7,99 €", period: "/ mois", note: "Sans engagement" },
 ];
 
 export const PREMIUM_FEATURES = [
@@ -18,4 +18,5 @@ export const PREMIUM_FEATURES = [
   "Fiche colorée, compactée, carte mentale et schéma, prêtes à imprimer en A4",
   "Modification de tes fiches, quiz et flashcards",
   "Génération de nouvelles fiches chaque jour",
+  "Paiement sécurisé, résiliable à tout moment",
 ];

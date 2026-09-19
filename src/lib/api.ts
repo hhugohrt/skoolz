@@ -184,8 +184,17 @@ export const api = {
   createParentLink: (token: string) =>
     request<{ url: string }>("/api/billing/parent-link", { method: "POST" }, token),
 
+  createCheckout: (token: string, plan: "monthly" | "yearly") =>
+    request<{ url: string }>("/api/billing/checkout", { method: "POST", body: JSON.stringify({ plan }) }, token),
+
+  createParentCheckout: (parentToken: string, plan: "monthly" | "yearly") =>
+    request<{ url: string }>(`/api/billing/parent/${encodeURIComponent(parentToken)}/checkout`, {
+      method: "POST",
+      body: JSON.stringify({ plan }),
+    }),
+
   getParentInvite: (parentToken: string) =>
-    request<{ firstName: string }>(`/api/billing/parent/${encodeURIComponent(parentToken)}`),
+    request<{ firstName: string; alreadyPremium: boolean }>(`/api/billing/parent/${encodeURIComponent(parentToken)}`),
 
   updateProfile: (token: string, payload: { firstName?: string; level?: Level; subjectIds?: string[] }) =>
     request<{ user: ApiUser }>("/api/me", { method: "PATCH", body: JSON.stringify(payload) }, token),

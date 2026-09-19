@@ -74,6 +74,10 @@ export default function Privacy() {
             adresse e-mail lui est transmise à cette seule fin.
           </li>
           <li>
+            <strong>Whop</strong> : encaissement des abonnements. Le paiement se fait sur sa page sécurisée : nous ne
+            voyons ni ne conservons tes données de carte bancaire, seulement le fait que l&rsquo;abonnement est actif.
+          </li>
+          <li>
             <strong>Google</strong> : uniquement si tu choisis de te connecter avec ton compte Google.
           </li>
         </ul>
